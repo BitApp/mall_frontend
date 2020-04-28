@@ -7,8 +7,8 @@ import { TABS } from "../utils/constant";
 
 export default ({ children, active, title, withBack, withSearch}) => {
   const { t } = useTranslation("common");
-  const activeClassName = "text-center block border-blue-500 py-2 px-4 bg-blue-400 hover:bg-blue-600 text-white border-b-4 border-blue-700 hover:border-blue-800";
-  const normalClassName = "text-center block bg-gray-200 hover:border-gray-200 text-blue-500 hover:bg-gray-200 py-2 px-4 border-b-4 border-gray-400 hover:border-gray-400 border-r";
+  const activeClassName = "text-center block border-blue-500 py-2 px-4 bg-blue-400 hover:bg-blue-600 text-white";
+  const normalClassName = "text-center block py-2 px-4";
   const router = useRouter();
   return (
     <div>
@@ -17,7 +17,7 @@ export default ({ children, active, title, withBack, withSearch}) => {
         <link href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css" rel="stylesheet" />
       </Head>
       <div className="container mb-12">
-      <nav className="px-4 py-2 w-full bg-gray-100 clearfix">
+      <nav className="px-4 py-2 w-full bg-white clearfix">
         { withBack && <svg viewBox="0 0 20 20"
         className="fill-current h-5 w-5 float-left" onClick={ () => { router.back(); } }>
             <path fill="#718096" d="M12.452,4.516c0.446,0.436,0.481,1.043,0,1.576L8.705,10l3.747,3.908c0.481,0.533,0.446,1.141,0,1.574  c-0.445,0.436-1.197,0.408-1.615,0c-0.418-0.406-4.502-4.695-4.502-4.695C6.112,10.57,6,10.285,6,10s0.112-0.57,0.335-0.789  c0,0,4.084-4.287,4.502-4.695C11.255,4.107,12.007,4.08,12.452,4.516z"/>
@@ -31,20 +31,27 @@ export default ({ children, active, title, withBack, withSearch}) => {
         </div>
       </nav>
         { children }
-        { active !== TABS.no && <ul className="flex mt-6 fixed bottom-0 w-full border-gray-400 border-t">
+        { active !== TABS.no && <ul className="flex mt-6 fixed w-full bottom-0 bg-white">
           <li className="flex-1">
             <Link href="/">
-              <a className={ active === TABS.onsale ? activeClassName : normalClassName }>{t("onSale")}</a>
+              <div className={ active === TABS.recommend ? activeClassName : normalClassName }>
+                <img className="inline" width="24" src={require("../imgs/icon_shop.svg")}/>
+                <a>{t("recommend")}</a>
+              </div>
             </Link>
           </li>
           <li className="flex-1">
             <Link href="/waiting">
-              <a className={ active === TABS.waiting ? activeClassName : normalClassName } >{t("comingSoon")}</a>
+              <div className={ active === TABS.store ? activeClassName : normalClassName }>
+                <a>{t("store")}</a>
+              </div>
             </Link>
           </li>
           <li className="flex-1">
             <Link href="/my">
-              <a className={ active === TABS.myauction ? activeClassName : normalClassName } >{t("my")}</a>
+              <div className={ active === TABS.my ? activeClassName : normalClassName }>
+                <a>{t("my")}</a>
+              </div>
             </Link>
           </li>
         </ul>

@@ -1,7 +1,7 @@
 export enum TABS {
-  onsale,
-  waiting,
-  myauction,
+  recommend,
+  store,
+  my,
   no,
 }
 

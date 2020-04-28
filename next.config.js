@@ -13,11 +13,10 @@ module.exports = withImages(withSass({
           ident: "postcss",
           plugins: [tailwindCss("./tailwind.config.js")]
         }
-      },
-     { loader: "sass-loader" }
-  ]}
-];
-return {
+      }, 
+      { loader: "sass-loader" }
+  ]}];
+  return {
    ...config,
    module: { 
      ...config.module, 
