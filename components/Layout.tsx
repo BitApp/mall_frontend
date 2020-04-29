@@ -4,11 +4,12 @@ import { useRouter } from "next/router";
 import { useTranslation } from "../i18n";
 // import { Link, withTranslation } from "../i18n";
 import { TABS } from "../utils/constant";
+import "./layout.scss";
 
 export default ({ children, active, title, withBack, withSearch}) => {
   const { t } = useTranslation("common");
-  const activeClassName = "text-center block border-blue-500 py-2 px-4 bg-blue-400 hover:bg-blue-600 text-white";
-  const normalClassName = "text-center block py-2 px-4";
+  const activeClassName = "text-center block py-2 px-4 color-yellow";
+  const normalClassName = "text-center block py-2 px-4 color-gray";
   const router = useRouter();
   return (
     <div>
@@ -35,22 +36,33 @@ export default ({ children, active, title, withBack, withSearch}) => {
           <li className="flex-1">
             <Link href="/">
               <div className={ active === TABS.recommend ? activeClassName : normalClassName }>
-                <img className="inline" width="24" src={require("../imgs/icon_shop.svg")}/>
-                <a>{t("recommend")}</a>
+                <div>
+                  { active === TABS.recommend ? <img className="inline" width="24" src={require("../imgs/icon_shop_yellow.svg")}/> :
+                    <img className="inline" width="24" src={require("../imgs/icon_shop_gray.svg")}/> }
+                </div>
+                <div><a className="text-sm">{t("recommend")}</a></div>
               </div>
             </Link>
           </li>
           <li className="flex-1">
-            <Link href="/waiting">
+            <Link href="/store">
               <div className={ active === TABS.store ? activeClassName : normalClassName }>
-                <a>{t("store")}</a>
+                <div>
+                  { active === TABS.store ? <img className="inline" width="24" src={require("../imgs/icon_gift_yellow.svg")}/> :
+                    <img className="inline" width="24" src={require("../imgs/icon_gift_gray.svg")}/> }
+                </div>
+                <div><a className="text-sm">{t("store")}</a></div>
               </div>
             </Link>
           </li>
           <li className="flex-1">
             <Link href="/my">
               <div className={ active === TABS.my ? activeClassName : normalClassName }>
-                <a>{t("my")}</a>
+                <div>
+                  { active === TABS.my ? <img className="inline" width="24" src={require("../imgs/icon_personal_yellow.svg")}/> :
+                  <img className="inline" width="24" src={require("../imgs/icon_personal_gray.svg")}/> }
+                </div>
+                <div><a className="text-sm">{t("my")}</a></div>
               </div>
             </Link>
           </li>

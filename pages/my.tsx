@@ -26,7 +26,7 @@ class My extends React.Component<IProps> {
   public render() {
     const { router, i18n, t } = this.props;
     return (
-      <Layout active={ TABS.myauction } title={t("my")} withBack={ false } withSearch={false}>
+      <Layout active={ TABS.my } title={t("my")} withBack={ false } withSearch={false}>
         <ul className="p-4">
           <li>
             <button onClick={() => router.push("/deal/index")} className="bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 px-4 rounded flex justify-between items-center w-full">

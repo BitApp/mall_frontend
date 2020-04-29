@@ -58,7 +58,7 @@ class Waiting extends React.Component<IProps> {
       speed: 500,
     };
     return (
-      <Layout active={TABS.waiting} title={ t("comingSoon") } withBack={ false } withSearch={ false }>
+      <Layout active={TABS.store} title={ t("comingSoon") } withBack={ false } withSearch={ false }>
         { products.length > 0 && <ul className="p-4">
           {products.map((prod, key) => (
             <li key={key} className="rounded overflow-hidden shadow-lg mb-10"
