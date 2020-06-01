@@ -33,8 +33,8 @@ export const CATEGORIES_ARRAY = [
   CATEGORIES.others,
 ];
 
-export const API_URL: string = "/api";
-export const SERVER_API_URL: string = "http://127.0.0.1:1337/api";
+export const API_URL: string = "/v1/api";
+export const SERVER_API_URL: string = "http://127.0.0.1:7777/api/v1";
 export const WEB_API_URL: string = "https://testauction.bitapp.net/webapi";
 export const CHAIN_URL: string = "https://www.iostabc.com/endpoint/getBatchContractStorage";
 export const CONTRACT_ADDRESS: string = "ContractCnVcjzfbxmPVi9DhLyrG2KTc1vknTp8bhmtkVrJ1354Y";
