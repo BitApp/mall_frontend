@@ -1,14 +1,14 @@
 {
   "apps" : [
     {
-      "name"      : "auction-frontend",
+      "name"      : "mall-frontend",
       "script"    : "ts-node",
       "args"      : "--project tsconfig.server.json server/index.ts",   
       "instances" : 0,
       "exec_mode" : "cluster",
       "watch"     : false,
-      "error_file": "logs/aution-frontend.stderr.log",
-      "out_file"  : "logs/aution-frontend.stdout.log",
+      "error_file": "logs/mall-frontend.stderr.log",
+      "out_file"  : "logs/mall-frontend.stdout.log",
       "mergeLogs" : false,
       "env": {
         "NODE_ENV": "dev"
@@ -18,7 +18,8 @@
         "PORT": 3003
       },
       "env_pre" : {
-        "NODE_ENV": "production"
+        "NODE_ENV": "production",
+        "PORT": 3003
       }
     }
   ]
