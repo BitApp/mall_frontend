@@ -29,16 +29,11 @@ class My extends React.Component<IProps> {
       <Layout active={ TABS.my } title={t("my")} withBack={ false } withSearch={false}>
         <ul className="p-4">
           <li>
-            <button onClick={() => router.push("/deal/index")} className="bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 px-4 rounded flex justify-between items-center w-full">
-              <span>{t("myDeal")}</span>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                <path fill="#bbb" d="M11 10L7.859 6.58a.695.695 0 0 1 0-.978.68.68 0 0 1 .969 0l3.83 3.908a.697.697 0 0 1 0 .979l-3.83 3.908a.68.68 0 0 1-.969 0 .695.695 0 0 1 0-.978L11 10z"/>
-              </svg>
-            </button>
-          </li>
-          <li className="mt-2">
-            <button onClick={() => router.push("/bidding/index")} className="bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 px-4 rounded flex justify-between items-center w-full">
-              <span>{t("myAuction")}</span>
+            <button onClick={() => router.push("/exchange/history")} className="bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 px-4 rounded flex justify-between items-center w-full">
+              <span>
+                <img className="inline align-middle" width="28" src={require("../imgs/icon_record.svg")}/>
+                <span className="align-middle">{"兑换记录"}</span>
+              </span>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
                 <path fill="#bbb" d="M11 10L7.859 6.58a.695.695 0 0 1 0-.978.68.68 0 0 1 .969 0l3.83 3.908a.697.697 0 0 1 0 .979l-3.83 3.908a.68.68 0 0 1-.969 0 .695.695 0 0 1 0-.978L11 10z"/>
               </svg>

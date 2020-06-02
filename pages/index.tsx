@@ -22,6 +22,7 @@ import {
 } from "../store/actions";
 import { ACTIONS, API_URL, CHAIN_URL, CONTRACT_ADDRESS, LANGS, SERVER_API_URL, TABS } from "../utils/constant";
 import { chainErrorMessage } from "../utils/helper";
+import { withRouter, SingletonRouter } from "next/router";
 
 interface IProps extends WithTranslation {
   errorMessage: string;
@@ -31,13 +32,11 @@ interface IProps extends WithTranslation {
   stores: any[];
   isLoading: boolean;
   wallet: string;
-  contractProducts: any[];
+  router: SingletonRouter;
   setWallet: (wallet: string) => Promise<void>;
   showSuccessMessage: (message: string) => void;
   showErrorMessage: (message: string) => void;
   closeAlert: () => void;
-  updateContractProducts: (contractProducts: any[]) => Promise<void>;
-  updateProducts: (products: any[]) => Promise<void>;
 }
 
 class Index extends React.Component<IProps> {
@@ -47,7 +46,7 @@ class Index extends React.Component<IProps> {
     const { dispatch } = ctx.store;
     dispatch({type: ACTIONS.BUSY});
     const res = await axios.get(`${isServer ? SERVER_API_URL : API_URL }/stores`);
-    const stores = res.data;
+    const stores = res.data.data.stores;
     // By returning { props: posts }, the Blog component
     // will receive `posts` as a prop at build time
     dispatch({type: ACTIONS.FREE});
@@ -68,11 +67,11 @@ class Index extends React.Component<IProps> {
   public render() {
     const {
       stores,
-      contractProducts,
       showSuccess,
       showError,
       errorMessage,
       successMessage,
+      router,
       t,
       i18n,
       isLoading } = this.props;
@@ -84,9 +83,15 @@ class Index extends React.Component<IProps> {
         <Tips/>
         { stores.length > 0 &&
         <ul className="p-4">
-          {stores.map((store, key) => (
-            <li key={key} className="rounded overflow-hidden shadow-lg mb-10">
-              <img className="w-full" src={ store.image.url } alt={store.name}/>
+          {stores.map((item, key) => (
+            <li key={key} className="rounded-md overflow-hidden shadow-lg mb-10" onClick={ () => {
+              router.push(`/store/${item.name}`);
+            }}>
+              <div><img className="w-full" src={ item.store.imgs[0] } alt={item.store.name}/></div>
+              <div className="px-6 py-4 text-gray-700">
+                <div className="mt-1">{item.store.name}</div>
+                <div className="mt-2">代币: {item.token.symbol}</div>
+              </div>
             </li>
           ))}
         </ul> }
@@ -130,19 +135,17 @@ function mapDispatchToProps(dispatch: Dispatch<any>) {
       setWallet,
       showErrorMessage,
       showSuccessMessage,
-      updateContractProducts,
-      updateProducts,
     },
     dispatch,
   );
 }
 
 function mapStateToProps(state: any) {
-  const { wallet, products, contractProducts, errorMessage, showError, showSuccess, successMessage, isLoading } = state;
-  return { wallet, products, contractProducts, errorMessage, showError, showSuccess, successMessage, isLoading };
+  const { wallet, contractProducts, errorMessage, showError, showSuccess, successMessage, isLoading } = state;
+  return { wallet, contractProducts, errorMessage, showError, showSuccess, successMessage, isLoading };
 }
 
-export default connect(
+export default withRouter(connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation("common")(Index));
+)(withTranslation("common")(Index)));

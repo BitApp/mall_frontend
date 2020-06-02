@@ -9,7 +9,7 @@ import { bindActionCreators, Dispatch } from "redux";
 import Layout from "../../components/Layout";
 import { withTranslation } from "../../i18n";
 import { closeAlert, setWallet, showErrorMessage, showSuccessMessage, updateMyDealProducts } from "../../store/actions";
-import { CONTRACT_ADDRESS, LANGS, STATUS, TABS, WEB_API_URL } from "../../utils/constant";
+import { CONTRACT_ADDRESS, LANGS, STATUS, TABS, API_URL } from "../../utils/constant";
 import { chainErrorMessage } from "../../utils/helper";
 
 interface IProps extends WithTranslation {
@@ -17,23 +17,29 @@ interface IProps extends WithTranslation {
   showError: boolean;
   showSuccess: boolean;
   successMessage: string;
-  dealProducts: any[];
   lang: string;
   wallet: string;
   showSuccessMessage: (message: string) => void;
   showErrorMessage: (message: string) => void;
   closeAlert: () => void;
   setWallet: (wallet: string) => void;
-  updateMyDealProducts: (dealProducts: any[]) => void;
 }
 
-class Deal extends React.Component<IProps> {
+interface IState {
+  products: any[];
+}
+
+class History extends React.Component<IProps> {
 
   public static async getInitialProps(ctx) {
     return {
       namespacesRequired: ["common"],
     };
   }
+
+  public state: IState = {
+    products: [],
+  };
 
   constructor(props) {
     super(props);
@@ -51,11 +57,11 @@ class Deal extends React.Component<IProps> {
           if (account) {
             clearInterval(timeInterval);
             this.props.setWallet(account);
-            const res = await axios.get(`${ WEB_API_URL }/auction?account=${account}`);
-            const products = res.data.data;
+            const res = await axios.get(`${ API_URL }/dealhistory?account=${account}`);
+            const products = res.data.data.history;
             // By returning { props: posts }, the Blog component
             // will receive `posts` as a prop at build time
-            this.props.updateMyDealProducts(products);
+            this.setState({ products });
           }
         });
       }
@@ -63,7 +69,8 @@ class Deal extends React.Component<IProps> {
   }
 
   public render() {
-    const { dealProducts, showError, successMessage, showSuccess, errorMessage, t, i18n } = this.props;
+    const { showError, successMessage, showSuccess, errorMessage, t, i18n } = this.props;
+    const { products } = this.state;
     const settings = {
       dots: true,
       infinite: true,
@@ -73,7 +80,7 @@ class Deal extends React.Component<IProps> {
       {t("noProduct")}
     </p>;
     return (
-      <Layout active={ TABS.myauction } title={t("deal")} withBack={ true } withSearch={false}>
+      <Layout active={ TABS.my } title={"我的兑换"} withBack={ true } withSearch={false}>
         {showSuccess &&
         <div className="z-50 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded fixed mx-4 left-0 right-0 mt-4" role="alert">
           <span className="block sm:inline">{ successMessage }</span>
@@ -102,8 +109,8 @@ class Deal extends React.Component<IProps> {
             </svg>
           </span>
         </div>}
-        { dealProducts && dealProducts.length > 0 && <ul className="p-4">
-          {dealProducts.map((prod, key) => (
+        { products && products.length > 0 && <ul className="p-4">
+          {products.map((prod, key) => (
               <li key={key} className="rounded overflow-hidden shadow-lg mb-10">
                 {/* <img className="w-full" src={ prod.image.url } alt={prod.name}/> */}
                 <Slider {...settings}>
@@ -233,7 +240,7 @@ class Deal extends React.Component<IProps> {
               </li>
             ))}
         </ul> }
-        { !dealProducts.length && empty }
+        { !products.length && empty }
       </Layout>
     );
   }
@@ -317,4 +324,4 @@ function mapStateToProps(state: any) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation("common")(Deal));
+)(withTranslation("common")(History));

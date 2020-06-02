@@ -1,4 +1,6 @@
 import axios from "axios";
+import IOST from "iost";
+import moment from "moment";
 import { WithTranslation } from "next-i18next";
 import dynamic from "next/dynamic";
 import { SingletonRouter, withRouter } from "next/router";
@@ -9,33 +11,46 @@ import Slider from "react-slick";
 // import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { bindActionCreators, Dispatch } from "redux";
 import Layout from "../../components/Layout";
+import Tips from "../../components/Tips";
 import { withTranslation } from "../../i18n";
-import { ACTIONS, API_URL, LANGS, SERVER_API_URL, TABS } from "../../utils/constant";
+import {
+  closeAlert,
+  setWallet,
+  showErrorMessage,
+  showSuccessMessage,
+} from "../../store/actions";
+import { ACTIONS, API_URL, CHAIN_URL, CONTRACT_ADDRESS, LANGS, SERVER_API_URL, TABS } from "../../utils/constant";
+import { chainErrorMessage } from "../../utils/helper";
 
 interface IProps extends WithTranslation {
-  products: any[];
-  wallet: string;
+  errorMessage: string;
+  showError: boolean;
+  showSuccess: boolean;
+  successMessage: string;
+  stores: any[];
   isLoading: boolean;
+  wallet: string;
   router: SingletonRouter;
   setWallet: (wallet: string) => Promise<void>;
-  updateContractProducts: (contractProducts: any[]) => Promise<void>;
+  showSuccessMessage: (message: string) => void;
+  showErrorMessage: (message: string) => void;
+  closeAlert: () => void;
 }
 
-class Waiting extends React.Component<IProps> {
+class StoreIndex extends React.Component<IProps> {
 
-  public static async getInitialProps({ req, store }) {
-    const isServer = !!req;
-    const { dispatch } = store;
+  public static async getInitialProps(ctx) {
+    const isServer = !!ctx.req;
+    const { dispatch } = ctx.store;
     dispatch({type: ACTIONS.BUSY});
-    const res = await axios.get(`${isServer ? SERVER_API_URL : API_URL }/products?status=waiting`);
-    const products = res.data;
-    dispatch({type: ACTIONS.UPDATE_PRODUCTS, payload: { products } });
-    dispatch({type: ACTIONS.FREE});
+    const res = await axios.get(`${isServer ? SERVER_API_URL : API_URL }/stores`);
+    const stores = res.data.data.stores;
     // By returning { props: posts }, the Blog component
     // will receive `posts` as a prop at build time
+    dispatch({type: ACTIONS.FREE});
     return {
       namespacesRequired: ["common"],
-      products,
+      stores,
     };
   }
 
@@ -43,72 +58,42 @@ class Waiting extends React.Component<IProps> {
     super(props);
   }
 
+  public componentDidMount() {
+    this.initIwallet();
+  }
+
   public render() {
-    const { products, router, t, i18n, isLoading } = this.props;
-    const CountDownComponent = dynamic(() =>
-      import("../../components/CountDown"),
-      { ssr: false },
-    );
+    const {
+      stores,
+      showSuccess,
+      showError,
+      errorMessage,
+      successMessage,
+      router,
+      t,
+      i18n,
+      isLoading } = this.props;
     const empty = <p className="mt-10 text-center text-gray-500 text-xs">
-      {t("noProduct")}
+      暂无小店
     </p>;
-    const settings = {
-      dots: true,
-      infinite: true,
-      speed: 500,
-    };
     return (
-      <Layout active={TABS.store} title={ t("comingSoon") } withBack={ false } withSearch={ false }>
-        { products.length > 0 && <ul className="p-4">
-          {products.map((prod, key) => (
-            <li key={key} className="rounded overflow-hidden shadow-lg mb-10"
-            onClick={ () => router.push("/product?pid=" + prod.id) }>
-              <Slider {...settings}>
-                {prod.images.map((item, index) => (
-                  <div key={index}>
-                    <img style={{height: "300px", margin: "0 auto"}} src={ item.url } />
-                  </div>
-                ))}
-              </Slider>
-              <div className="px-6 py-4">
-                <div className="flex justify-between">
-                  <div className="font-bold text-xl mb-2">
-                    { i18n.language === LANGS.cn ? prod.name : prod.name_en}
-                  </div>
-                  <div>
-                    {
-                      prod.types.map((item, index) => {
-                      return <span className="mr-1 text-xs text-gray-500" key={index}>
-                        {i18n.language === LANGS.cn ? t(item.type) : item.type}
-                        </span>;
-                      })
-                    }
-                  </div>
-                </div>
-                <div className="mt-2 text-sm">
-                  <div className="inline-block font-semibold text-gray-700">{t("start")}: &nbsp;
-                    <CountDownComponent endText={t("start")} endTime={new Date(prod.startTime).getTime() }/>
-                  </div>
-                </div>
-                <div className="text-blue-500 text-sm mt-1 mb-4">
-                  {t("viewDetail")}
-                </div>
-                <p className="text-gray-700 text-sm">
-                  { i18n.language === LANGS.cn ? prod.desc : prod.desc_en}
-                </p>
-              </div>
-              <div className="px-6 py-4 bg-gray-200 text-sm">
-                <div className="flex justify-between text-gray-700">
-                  <div><span className="w-12 inline-block">
-                    {t("startPrice")}: </span><span>{prod.basePrice} IOST</span> </div>
-                  <div><span className="w-12 inline-block">
-                    {t("stepPrice")}: </span><span>{prod.priceStep} IOST</span></div>
-                </div>
+      <Layout active={TABS.store} title={t("store")} withBack={ false } withSearch={true}>
+        <Tips/>
+        { stores.length > 0 &&
+        <ul className="p-4">
+          {stores.map((item, key) => (
+            <li key={key} className="rounded-md overflow-hidden shadow-lg mb-10" onClick={ () => {
+              router.push(`/store/${item.name}`);
+            }}>
+              <div><img className="w-full" src={ item.store.imgs[0] } alt={item.store.name}/></div>
+              <div className="px-6 py-4 text-gray-700">
+                <div className="mt-1">{item.store.name}</div>
+                <div className="mt-2">代币: {item.token.symbol}</div>
               </div>
             </li>
           ))}
         </ul> }
-        { !isLoading && !products.length && empty}
+        { !isLoading && !stores.length && empty}
         { isLoading && <div className="p-4">
             <Skeleton height={300}/>
             <div className="mt-2">
@@ -121,22 +106,44 @@ class Waiting extends React.Component<IProps> {
       </Layout>
     );
   }
+
+  public initIwallet() {
+    const timeInterval = setInterval(() => {
+      const win = window as any;
+      if (win.IWalletJS) {
+          win.IWalletJS.enable().then((account) => {
+          if (account) {
+            clearInterval(timeInterval);
+            this.props.setWallet(account);
+          }
+        });
+      }
+    }, 1000);
+  }
+
+  public closeAlert() {
+    this.props.closeAlert();
+  }
 }
 
 function mapDispatchToProps(dispatch: Dispatch<any>) {
   return bindActionCreators(
     {
+      closeAlert,
+      setWallet,
+      showErrorMessage,
+      showSuccessMessage,
     },
     dispatch,
   );
 }
 
 function mapStateToProps(state: any) {
-  const { wallet, contractProducts, products, isLoading } = state;
-  return { wallet, contractProducts, products, isLoading };
+  const { wallet, errorMessage, showError, showSuccess, successMessage, isLoading } = state;
+  return { wallet, errorMessage, showError, showSuccess, successMessage, isLoading };
 }
 
 export default withRouter(connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslation("common")(Waiting)));
+)(withTranslation("common")(StoreIndex)));
