@@ -114,7 +114,7 @@ class History extends React.Component<IProps> {
               <li key={key} className="rounded overflow-hidden shadow-lg mb-10">
                 {/* <img className="w-full" src={ prod.image.url } alt={prod.name}/> */}
                 <Slider {...settings}>
-                  {prod.images.map((item, index) => (
+                  {prod.product.imgs.map((item, index) => (
                     <div key={index}>
                       <img className="w-full" src={item} />
                     </div>
@@ -124,35 +124,21 @@ class History extends React.Component<IProps> {
                 <div className="font-bold text-xl mb-2">
                   <div className="flex justify-between">
                     <div className="font-bold text-xl mb-2">
-                      { i18n.language === LANGS.cn ? prod.name : prod.name_en }
+                      { i18n.language === LANGS.cn ? prod.product.name : prod.product.name }
                     </div>
                     <div>
                       {
-                        prod.types.map((item, index) => {
+                        prod.product.types.map((item, index) => {
                         return <span className="mr-1 text-xs text-gray-500" key={index}>
-                          {i18n.language === LANGS.cn ? t(item.type) : item.type}
+                          {i18n.language === LANGS.cn ? t(item.name) : item.name}
                           </span>;
                         })
                       }
                     </div>
                   </div>
                 </div>
-                  <div className="mb-4 mt-2 text-sm">
-                    <div className="inline-block font-semibold text-gray-700">
-                      {t("start")}: {moment(prod.startTime).format("YYYY-MM-DD H:mm:ss")}
-                    </div>
-                    {/* <div className="text-gray-700 mt-1">
-                      结束:
-                      <span className="ml-1">
-                      <CountDownComponent
-                        endTime={ new Date(contractProducts[key] ? contractProducts[key].endTime / 1e6 :
-                          new Date(prod.startTime).getTime() + prod.duration * 1000) }
-                      />
-                    </span>
-                    </div> */}
-                  </div>
                   <p className="text-gray-700 text-sm">
-                  { i18n.language === LANGS.cn ? prod.desc : prod.desc_en }
+                  { i18n.language === LANGS.cn ? prod.product.desc : prod.product.desc }
                   </p>
                 </div>
                 <div className="px-6 py-4 bg-gray-200 text-sm">
@@ -162,7 +148,7 @@ class History extends React.Component<IProps> {
                       </span>
                     </div>
                     <div>
-                      <span className="text-blue-500">{ prod.price } IOST</span>
+                      <span className="text-blue-500">{ Number(prod.data.price) } {prod.data.token}</span>
                     </div>
                   </div>
                   <div className="mt-2 flex justify-between text-gray-700">
@@ -170,7 +156,7 @@ class History extends React.Component<IProps> {
                       {t("dealTime")}:
                     </div>
                     <div>
-                     {moment(prod.time).format("YYYY-MM-DD H:mm:ss")}
+                     {moment(prod.createdAt).format("YYYY-MM-DD H:mm:ss")}
                     </div>
                   </div>
                   <div className="mt-2 flex justify-between">
@@ -195,13 +181,13 @@ class History extends React.Component<IProps> {
                       </a>
                     </div> }
                 </div>
-                { prod.status === STATUS.success && prod.seller && <div className="px-6 py-4 bg-gray-100 text-sm">
+                { prod.status === STATUS.success && prod.store && <div className="px-6 py-4 bg-gray-100 text-sm">
                   <div className="flex justify-between text-gray-700">
                     <div>
                     {t("seller")}:
                     </div>
                     <div>
-                    {prod.seller[0].name}
+                    {prod.store.seller}
                     </div>
                   </div>
                   <div className="mt-2 flex justify-between text-gray-700">
@@ -209,7 +195,7 @@ class History extends React.Component<IProps> {
                     {t("mobile")}:
                     </div>
                     <div>
-                    {prod.seller[0].mobile}
+                    {prod.store.sellerMobile}
                     </div>
                   </div>
                   <div className="mt-2 flex justify-between text-gray-700">
@@ -217,7 +203,7 @@ class History extends React.Component<IProps> {
                     {t("wechat")}:
                     </div>
                     <div>
-                    {prod.seller[0].wechat}
+                    {prod.store.sellerWechat}
                     </div>
                   </div>
                   <div className="mt-2 flex justify-between text-gray-700">
@@ -225,12 +211,13 @@ class History extends React.Component<IProps> {
                     {t("iostAccount")}:
                     </div>
                     <div className="text-blue-500">
-                    {prod.seller[0].iostAccount}
+                    {prod.store.sellerAccount}
                     </div>
                   </div>
                 </div> }
                 { prod.status === STATUS.success &&
-                  <button className="w-full bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded rounded-t-none" onClick={() => { this.receive(prod); }}>
+                  <button className="w-full button-bg hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md"
+                  onClick={() => { this.receive(prod); }}>
                   {t("receiveConfirm")}
                 </button> }
                 { prod.status === STATUS.received &&
