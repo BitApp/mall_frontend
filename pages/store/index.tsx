@@ -65,10 +65,6 @@ class StoreIndex extends React.Component<IProps> {
   public render() {
     const {
       stores,
-      showSuccess,
-      showError,
-      errorMessage,
-      successMessage,
       router,
       t,
       i18n,
