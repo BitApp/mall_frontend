@@ -59,11 +59,11 @@ export enum LANGS {
 }
 
 export enum STATUS {
-  offline = "offline",
-  waiting = "waiting",
-  bidding = "bidding",
-  failed = "failed",
-  success = "success",
-  closed = "closed",
-  received = "received",
+  offline = "OFFLINE",
+  waiting = "WAITING",
+  bidding = "BIDDING",
+  failed = "FAILED",
+  success = "SUCCESS",
+  closed = "CLOSED",
+  received = "RECEIVED",
 }

@@ -181,7 +181,7 @@ class History extends React.Component<IProps> {
                       </a>
                     </div> }
                 </div>
-                { prod.status === STATUS.success && prod.store && <div className="px-6 py-4 bg-gray-100 text-sm">
+                { prod.data.status === STATUS.waiting && prod.store && <div className="px-6 py-4 bg-gray-100 text-sm">
                   <div className="flex justify-between text-gray-700">
                     <div>
                     {t("seller")}:
@@ -215,8 +215,8 @@ class History extends React.Component<IProps> {
                     </div>
                   </div>
                 </div> }
-                { prod.status === STATUS.success &&
-                  <button className="w-full button-bg hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md"
+                { prod.data.status === STATUS.waiting &&
+                  <button className="w-full button-bg hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md rounded-t-none"
                   onClick={() => { this.receive(prod); }}>
                   {t("receiveConfirm")}
                 </button> }
@@ -262,14 +262,14 @@ class History extends React.Component<IProps> {
   public receive(prod) {
     const win = window as any;
     const iost = win.IWalletJS.newIOST(IOST);
-    const { wallet, t } = this.props;
+    const { t } = this.props;
     const that = this;
     const tx = iost.callABI(
       CONTRACT_ADDRESS,
       "received",
       [
-        prod.pId,
-        wallet,
+        prod.data.pId,
+        prod.data.number,
       ],
     );
     tx.gasLimit = 300000;
