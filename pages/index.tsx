@@ -45,7 +45,7 @@ class Index extends React.Component<IProps> {
     const isServer = !!ctx.req;
     const { dispatch } = ctx.store;
     dispatch({type: ACTIONS.BUSY});
-    const res = await axios.get(`${isServer ? SERVER_API_URL : API_URL }/stores`);
+    const res = await axios.get(`${isServer ? SERVER_API_URL : API_URL }/stores?recommand=1`);
     const stores = res.data.data.stores;
     // By returning { props: posts }, the Blog component
     // will receive `posts` as a prop at build time
