@@ -220,7 +220,7 @@ class History extends React.Component<IProps> {
                   onClick={() => { this.receive(prod); }}>
                   {t("receiveConfirm")}
                 </button> }
-                { prod.status === STATUS.received &&
+                { prod.data.status === STATUS.received &&
                   <button className="w-full bg-gray-400 text-white font-bold py-2 px-4 rounded rounded-t-none">
                   {t("txCompleted")}
                 </button> }
