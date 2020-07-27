@@ -36,7 +36,7 @@ export const CATEGORIES_ARRAY = [
 export const API_URL: string = "/api/v1";
 export const SERVER_API_URL: string = "http://127.0.0.1:7777/api/v1";
 export const CHAIN_URL: string = "https://www.iostabc.com/endpoint/getBatchContractStorage";
-export const CONTRACT_ADDRESS: string = "ContractGLdxhDjsBcSSLsMem7tumu8Ah4FYmkzSLc9epJ88fpPp";
+export const CONTRACT_ADDRESS: string = "ContractB3AZJSgqegg6vwkraTcXaqLzoZCTmL4rsoCrkxaAUFe";
 
 export enum ACTIONS {
   BUSY = "BUSY",
