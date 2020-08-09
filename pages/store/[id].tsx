@@ -75,6 +75,19 @@ class StoreProduct extends React.Component<IProps> {
       <Layout active={TABS.no} title={ id } withBack={ true } withSearch={ false }>
         <Tips/>
         { products.length > 0 && <ul className="p-4">
+          <li className="bg-white flex justify-between border mb-10 px-4 py-2 align-middle rounded-md">
+            <div className="text-gray-800">
+              <div className="leading-8">兑换比例:
+              <span className="ml-1 font-semibold">1 <small>IOST</small>:100 <small>HSR</small>
+              </span>
+              </div>
+              <div className="leading-8">兑换余额:
+              <span className="font-semibold ml-1">1000 <small>IOST</small></span></div>
+            </div>
+            <button className="button-bg hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+              兑换
+            </button>
+          </li>
           { products.map((prod, key) => (
             <li key={key} className="rounded overflow-hidden shadow-lg mb-10">
               <Slider {...settings}>
