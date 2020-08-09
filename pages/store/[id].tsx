@@ -84,7 +84,7 @@ class StoreProduct extends React.Component<IProps> {
               <div className="leading-8">兑换余额:
               <span className="font-semibold ml-1">1000 <small>IOST</small></span></div>
             </div>
-            <button className="button-bg hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+            <button className="button-bg hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md" type="button">
               兑换
             </button>
           </li>
