@@ -164,12 +164,8 @@ class StoreProduct extends React.Component<IProps> {
                   <span className="font-semibold ml-1">{repoInfo.repoBalance}
                     <small>IOST</small></span></div>
               </div>
-              <button className="button-bg hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md" type="button"
-                      onclick={
-                        () => {
-                          this.setState({showRepo: true});
-                        }
-                      }>
+              <button className="button-bg hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md"
+                      onClick={() => this.setState({showRecharge: true})}>
                 兑换
               </button>
             </li>
