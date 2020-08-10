@@ -34,6 +34,7 @@ interface IProps extends WithTranslation {
   isLoading: boolean;
   router: SingletonRouter;
   setWallet: (wallet: string) => Promise<void>;
+  repoInfo: any
 }
 
 class StoreProduct extends React.Component<IProps> {
@@ -44,8 +45,10 @@ class StoreProduct extends React.Component<IProps> {
     const { dispatch } = store;
     dispatch({type: ACTIONS.BUSY});
     const res = await axios.get(`${isServer ? SERVER_API_URL : API_URL }/stores/${id}/products`);
+    const storeRepo = await axios.get(`${isServer ? SERVER_API_URL : API_URL }/stores/${id}`);
     const products = res.data.data.products;
     const storeInfo = res.data.data.store;
+    const repoInfo = storeRepo.data.data ? storeRepo.data.data.token : undefined;
     dispatch({type: ACTIONS.FREE});
     // By returning { props: posts }, the Blog component
     // will receive `posts` as a prop at build time
@@ -54,6 +57,7 @@ class StoreProduct extends React.Component<IProps> {
       namespacesRequired: ["common"],
       products,
       storeInfo,
+      repoInfo
     };
   }
 
@@ -62,7 +66,7 @@ class StoreProduct extends React.Component<IProps> {
   }
 
   public render() {
-    const { products, t, i18n, isLoading, id } = this.props;
+    const { products, t, i18n, isLoading, id, repoInfo } = this.props;
     const empty = <p className="mt-10 text-center text-gray-500 text-xs">
       {t("noProduct")}
     </p>;
@@ -74,20 +78,25 @@ class StoreProduct extends React.Component<IProps> {
     return (
       <Layout active={TABS.no} title={ id } withBack={ true } withSearch={ false }>
         <Tips/>
-        { products.length > 0 && <ul className="p-4">
-          <li className="bg-white flex justify-between border mb-10 px-4 py-2 align-middle rounded-md">
-            <div className="text-gray-800">
-              <div className="leading-8">兑换比例:
-              <span className="ml-1 font-semibold">1 <small>IOST</small>:100 <small>HSR</small>
+        {
+          repoInfo && repoInfo.repo &&
+          <ul className="p-4">
+            <li className="bg-white flex justify-between border mb-10 px-4 py-2 align-middle rounded-md">
+              <div className="text-gray-800">
+                <div className="leading-8">兑换比例:
+                  <span className="ml-1 font-semibold">1<small>IOST</small>:{(1/Number(repoInfo.repoRate)).toFixed(8)} <small>HSR</small>
               </span>
+                </div>
+                <div className="leading-8">兑换余额:
+                  <span className="font-semibold ml-1">{repoInfo.repoBalance} <small>IOST</small></span></div>
               </div>
-              <div className="leading-8">兑换余额:
-              <span className="font-semibold ml-1">1000 <small>IOST</small></span></div>
-            </div>
-            <button className="button-bg hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md" type="button">
-              兑换
-            </button>
-          </li>
+              <button className="button-bg hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md" type="button">
+                兑换
+              </button>
+            </li>
+          </ul>
+        }
+        { products.length > 0 && <ul className="p-4">
           { products.map((prod, key) => (
             <li key={key} className="rounded overflow-hidden shadow-lg mb-10">
               <Slider {...settings}>
