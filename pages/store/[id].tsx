@@ -165,7 +165,7 @@ class StoreProduct extends React.Component<IProps> {
                     <small>IOST</small></span></div>
               </div>
               <button className="button-bg hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md"
-                      onClick={() => this.setState({showRecharge: true})}>
+                      onClick={() => this.setState({showRepo: true})}>
                 兑换
               </button>
             </li>
