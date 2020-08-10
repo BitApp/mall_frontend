@@ -157,7 +157,7 @@ class StoreProduct extends React.Component<IProps> {
                 <div className="leading-8">兑换比例:
                   <span
                     className="ml-1 font-semibold">1 <small>IOST</small>:{(1 / Number(repoInfo.repoRate)).toFixed(8)}
-                    <small>{repoInfo.symbol}</small>
+                    <small> {repoInfo.symbol}</small>
               </span>
                 </div>
                 <div className="leading-8">兑换余额:
