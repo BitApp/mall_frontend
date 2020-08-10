@@ -277,7 +277,7 @@ class StoreProduct extends React.Component<IProps> {
       );
       tx.gasLimit = 300000;
       tx.addApprove(repoInfo.symbol, this.state.repoAmount.toString());
-      this.setState({repoShow: false});
+      this.setState({showRepo: false});
       iost.signAndSend(tx).on("pending", (trx) => {
         console.info(trx);
       })
