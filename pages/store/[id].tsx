@@ -261,7 +261,7 @@ class StoreProduct extends React.Component<IProps> {
   }
 
   public repoExchange() {
-    const {id} = this.props;
+    const {id, repoInfo} = this.props;
     if (confirm(`确定要兑换成IOST吗?`)) {
       const win = window as any;
       const iost = win.IWalletJS.newIOST(IOST);
@@ -276,7 +276,7 @@ class StoreProduct extends React.Component<IProps> {
         ],
       );
       tx.gasLimit = 300000;
-      tx.addApprove("iost", this.state.repoAmount.toString());
+      tx.addApprove(repoInfo.symbol, this.state.repoAmount.toString());
       this.setState({repoShow: false});
       iost.signAndSend(tx).on("pending", (trx) => {
         console.info(trx);
