@@ -95,14 +95,13 @@ class Index extends React.Component<IProps> {
               <div className="px-6 py-4 text-gray-700">
                 <div className="mt-1">{item.store.name}</div>
                 <div className="mt-2">代币: {item.token ? item.token.symbol: null}</div>
-                <div className="mt-2">代币: {item.token ? item.token.symbol: null}</div>
                 {
-                  item.recommendStartTime === 0 ?
+                  item.recommendEndTime === 0 ?
+                    null:
                     <div>
                       <span>推荐倒计时:</span>
                       <CountDownComponent endText={'推荐结束'} endTime={item.recommendStartTime}/>
                     </div>
-                    : null
                 }
               </div>
             </li>
