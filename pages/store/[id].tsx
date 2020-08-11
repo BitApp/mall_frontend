@@ -4,12 +4,13 @@ import {WithTranslation} from "next-i18next";
 import {SingletonRouter, withRouter} from "next/router";
 import React from "react";
 import Skeleton from "react-loading-skeleton";
+import Modal from "react-modal";
 import {connect} from "react-redux";
 import Slider from "react-slick";
-import Modal from "react-modal";
 // import "react-responsive-carousel/lib/styles/carousel.min.css";
 import {bindActionCreators, Dispatch} from "redux";
 import Layout from "../../components/Layout";
+import Tips from "../../components/Tips";
 import {withTranslation} from "../../i18n";
 import {
   closeAlert,
@@ -19,7 +20,6 @@ import {
 } from "../../store/actions";
 import {ACTIONS, API_URL, CONTRACT_ADDRESS, LANGS, SERVER_API_URL, TABS} from "../../utils/constant";
 import {chainErrorMessage} from "../../utils/helper";
-import Tips from "../../components/Tips";
 
 interface IProps extends WithTranslation {
   id: string;
@@ -35,12 +35,12 @@ interface IProps extends WithTranslation {
   isLoading: boolean;
   router: SingletonRouter;
   setWallet: (wallet: string) => Promise<void>;
-  repoInfo: any
+  repoInfo: any;
 }
 
 interface IState {
-  showRepo: boolean,
-  repoAmount: number
+  showRepo: boolean;
+  repoAmount: number;
 }
 
 class StoreProduct extends React.Component<IProps> {
@@ -67,14 +67,14 @@ class StoreProduct extends React.Component<IProps> {
     };
   }
 
+  public state: IState = {
+    showRepo: false,
+    repoAmount: 0,
+  };
+
   constructor(props) {
     super(props);
   }
-
-  public state: IState = {
-    showRepo: false,
-    repoAmount: 0
-  };
 
   public render() {
     const {products, t, i18n, isLoading, id, repoInfo} = this.props;
@@ -115,9 +115,9 @@ class StoreProduct extends React.Component<IProps> {
                 autoFocus
                 onChange={(evt) => {
                   const tmp = evt.target.value;
-                  const value = tmp.replace(/[^1-9]{0,1}(\d*(?:\.\d{0,2})?).*$/g, '$1');
+                  const value = tmp.replace(/[^1-9]{0,1}(\d*(?:\.\d{0,2})?).*$/g, "$1");
                   if (Number(value) * Number(repoInfo.repoRate) > Number(repoInfo.repoBalance)) {
-                    alert("超出可回购余额")
+                    alert("超出可回购余额");
                     this.setState({repoAmount: Number(repoInfo.repoBalance) / Number(repoInfo.repoRate)});
                   } else {
                     this.setState({repoAmount: Number(value)});
@@ -125,9 +125,6 @@ class StoreProduct extends React.Component<IProps> {
                 }}
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 type="text"
-                onInput={(evt) => {
-
-                }}
                 value={this.state.repoAmount}
                 placeholder="回购数量"/>
             </div>
@@ -151,12 +148,12 @@ class StoreProduct extends React.Component<IProps> {
         </Modal>
         {
           repoInfo && repoInfo.repo &&
-          <ul className="p-4">
-            <li className="bg-white flex justify-between border mb-10 px-4 py-2 align-middle rounded-md">
+          <ul className="p-4 pb-0">
+            <li className="bg-white flex justify-between border px-4 py-2 align-middle rounded-md">
               <div className="text-gray-800">
                 <div className="leading-8">兑换比例:
                   <span
-                    className="ml-1 font-semibold">1 <small>IOST</small>:{(1 / Number(repoInfo.repoRate)).toFixed(8)}
+                    className="ml-1 font-semibold">1 <small>IOST</small>:{(1 / Number(repoInfo.repoRate)).toFixed(8) * 1}
                     <small> {repoInfo.symbol}</small>
               </span>
                 </div>
