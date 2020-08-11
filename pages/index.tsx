@@ -100,7 +100,7 @@ class Index extends React.Component<IProps> {
                     null:
                     <div>
                       <span>推荐倒计时:</span>
-                      <CountDownComponent endText={'推荐结束'} endTime={item.recommendStartTime}/>
+                      <CountDownComponent endText={'推荐结束'} endTime={item.recommendEndTime}/>
                     </div>
                 }
               </div>
