@@ -1,3 +1,7 @@
 {
-  "store": "小店"
+  "store": "小店",
+  "day": "天",
+  "hour": "时",
+  "minute": "分",
+  "second": "秒"
 }
