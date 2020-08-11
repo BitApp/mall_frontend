@@ -104,7 +104,6 @@ class StoreProduct extends React.Component<IProps> {
               transform: "translate(-50%, -50%)",
             },
           }}
-          contentLabel="Example Modal"
         >
           <form>
             <div>
@@ -113,19 +112,21 @@ class StoreProduct extends React.Component<IProps> {
               </label>
               <input
                 autoFocus
-                onChange={(evt) => {
+                onChange={(evt) => {this.setState({repoAmount: Number(evt.target.value)});}}
+                onBlur={(evt) => {
                   const tmp = evt.target.value;
                   const value = tmp.replace(/[^1-9]{0,1}(\d*(?:\.\d{0,2})?).*$/g, "$1");
                   if (Number(value) * Number(repoInfo.repoRate) > Number(repoInfo.repoBalance)) {
                     alert("超出可回购余额");
                     this.setState({repoAmount: Number(repoInfo.repoBalance) / Number(repoInfo.repoRate)});
+                    evt.target.value = (Number(repoInfo.repoBalance) / Number(repoInfo.repoRate)).toString();
                   } else {
                     this.setState({repoAmount: Number(value)});
                   }
                 }}
+                min="0"
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 type="text"
-                value={this.state.repoAmount}
                 placeholder="回购数量"/>
             </div>
             <div className="flex items-center justify-between">
@@ -153,14 +154,14 @@ class StoreProduct extends React.Component<IProps> {
               <div className="text-gray-800">
                 <div className="leading-8">兑换比例:
                   <span
-                    className="ml-1 font-semibold">1 <small>IOST</small>:{(1 / Number(repoInfo.repoRate)).toFixed(8) * 1}
+                    className="ml-1 font-semibold">1 <small>IOST</small>
+                    ={(Number((1 / repoInfo.repoRate).toFixed(8)))}
                     <small> {repoInfo.symbol}</small>
               </span>
                 </div>
                 <div className="leading-8">兑换余额:
-                  <span className="font-semibold ml-1">{repoInfo.repoBalance}
-                    <small>IOST</small></span></div>
-              </div>
+                  <span className="font-semibold ml-1">{repoInfo.repoBalance} <small>IOST</small></span></div>
+                </div>
               <button className="button-bg hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md"
                       onClick={() => this.setState({showRepo: true})}>
                 兑换
@@ -259,32 +260,34 @@ class StoreProduct extends React.Component<IProps> {
 
   public repoExchange() {
     const {id, repoInfo} = this.props;
-    if (confirm(`确定要兑换成IOST吗?`)) {
-      const win = window as any;
-      const iost = win.IWalletJS.newIOST(IOST);
-      // const { wallet, t } = this.props;
-      const that = this;
-      const tx = iost.callABI(
-        CONTRACT_ADDRESS,
-        "exchange",
-        [
-          id,
-          String(this.state.repoAmount)
-        ],
-      );
-      tx.gasLimit = 300000;
-      tx.addApprove(repoInfo.symbol, this.state.repoAmount.toString());
-      this.setState({showRepo: false});
-      iost.signAndSend(tx).on("pending", (trx) => {
-        console.info(trx);
-      })
-        .on("success", (result) => {
-          // 刷新数据
-          that.props.showSuccessMessage("兑换成功，请等待30左右查询到账");
+    if (this.state.repoAmount > 0) {
+      if (confirm(`确定要兑换成IOST吗?`)) {
+        const win = window as any;
+        const iost = win.IWalletJS.newIOST(IOST);
+        // const { wallet, t } = this.props;
+        const that = this;
+        const tx = iost.callABI(
+          CONTRACT_ADDRESS,
+          "exchange",
+          [
+            id,
+            String(this.state.repoAmount),
+          ],
+        );
+        tx.gasLimit = 300000;
+        tx.addApprove(repoInfo.symbol, this.state.repoAmount.toString());
+        this.setState({showRepo: false});
+        iost.signAndSend(tx).on("pending", (trx) => {
+          console.info(trx);
         })
-        .on("failed", (failed) => {
-          that.props.showErrorMessage(chainErrorMessage(failed));
-        });
+          .on("success", (result) => {
+            // 刷新数据
+            that.props.showSuccessMessage("兑换成功，请等待30左右查询到账");
+          })
+          .on("failed", (failed) => {
+            that.props.showErrorMessage(chainErrorMessage(failed));
+          });
+      }
     }
   }
 }
