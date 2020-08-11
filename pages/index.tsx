@@ -75,6 +75,10 @@ class Index extends React.Component<IProps> {
       t,
       i18n,
       isLoading } = this.props;
+    const CountDownComponent = dynamic(() =>
+        import("../components/CountDown"),
+      {ssr: false},
+    );
     const empty = <p className="mt-10 text-center text-gray-500 text-xs">
       暂无小店
     </p>;
@@ -91,6 +95,15 @@ class Index extends React.Component<IProps> {
               <div className="px-6 py-4 text-gray-700">
                 <div className="mt-1">{item.store.name}</div>
                 <div className="mt-2">代币: {item.token ? item.token.symbol: null}</div>
+                <div className="mt-2">代币: {item.token ? item.token.symbol: null}</div>
+                {
+                  item.recommendStartTime === 0 ?
+                    <div>
+                      <span>推荐倒计时:</span>
+                      <CountDownComponent endText={'推荐结束'} endTime={item.recommendStartTime}/>
+                    </div>
+                    : null
+                }
               </div>
             </li>
           ))}
