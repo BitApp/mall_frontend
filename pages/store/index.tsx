@@ -1,26 +1,26 @@
 import axios from "axios";
 import IOST from "iost";
 import moment from "moment";
-import { WithTranslation } from "next-i18next";
+import {WithTranslation} from "next-i18next";
 import dynamic from "next/dynamic";
-import { SingletonRouter, withRouter } from "next/router";
+import {SingletonRouter, withRouter} from "next/router";
 import React from "react";
 import Skeleton from "react-loading-skeleton";
-import { connect } from "react-redux";
+import {connect} from "react-redux";
 import Slider from "react-slick";
 // import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { bindActionCreators, Dispatch } from "redux";
+import {bindActionCreators, Dispatch} from "redux";
 import Layout from "../../components/Layout";
 import Tips from "../../components/Tips";
-import { withTranslation } from "../../i18n";
+import {withTranslation} from "../../i18n";
 import {
   closeAlert,
   setWallet,
   showErrorMessage,
   showSuccessMessage,
 } from "../../store/actions";
-import { ACTIONS, API_URL, CHAIN_URL, CONTRACT_ADDRESS, LANGS, SERVER_API_URL, TABS } from "../../utils/constant";
-import { chainErrorMessage } from "../../utils/helper";
+import {ACTIONS, API_URL, CHAIN_URL, CONTRACT_ADDRESS, LANGS, SERVER_API_URL, TABS} from "../../utils/constant";
+import {chainErrorMessage} from "../../utils/helper";
 
 interface IProps extends WithTranslation {
   errorMessage: string;
@@ -41,7 +41,7 @@ class StoreIndex extends React.Component<IProps> {
 
   public static async getInitialProps(ctx) {
     const isServer = !!ctx.req;
-    const { dispatch } = ctx.store;
+    const {dispatch} = ctx.store;
     dispatch({type: ACTIONS.BUSY});
     const res = await axios.get(`${isServer ? SERVER_API_URL : API_URL }/stores`);
     const stores = res.data.data.stores;
@@ -68,38 +68,45 @@ class StoreIndex extends React.Component<IProps> {
       router,
       t,
       i18n,
-      isLoading } = this.props;
+      isLoading
+    } = this.props;
     const empty = <p className="mt-10 text-center text-gray-500 text-xs">
       暂无小店
     </p>;
     return (
-      <Layout active={TABS.store} title={t("store")} withBack={ false } withSearch={true}>
+      <Layout active={TABS.store} title={t("store")} withBack={false} withSearch={true}>
         <Tips/>
-        { stores.length > 0 &&
+        {stores.length > 0 &&
         <ul className="p-4">
           {stores.map((item, key) => (
-            <li key={key} className="rounded-md overflow-hidden shadow-lg mb-10" onClick={ () => {
+            <li key={key} className="rounded-md overflow-hidden shadow-lg mb-10" onClick={() => {
               router.push(`/store/${item.name}`);
             }}>
-              <div><img className="w-full" src={ item.store.imgs[0] } alt={item.store.name}/></div>
+              <div><img className="w-full" src={item.store.imgs[0]} alt={item.store.name}/></div>
               <div className="px-6 py-4 text-gray-700">
-                <div className="mt-1">{item.store.name}</div>
-                <div className="mt-1 text-sm text-gray-600">{item.store.desc}</div>
+                <div className="mt-1">
+                  <span className="w-12 inline-block">店铺:</span>
+                  <div>{item.store.name}</div>
+                </div>
+                <div>
+                  <span className="w-12 inline-block">简介:</span>
+                  <div className="mt-1 text-sm text-gray-600">{item.store.desc}</div>
+                </div>
                 <div className="mt-2">代币: {item.token ? item.token.symbol : null}</div>
               </div>
             </li>
           ))}
-        </ul> }
-        { !isLoading && !stores.length && empty}
-        { isLoading && <div className="p-4">
-            <Skeleton height={300}/>
-            <div className="mt-2">
-              <Skeleton width={160} height={24}/>
-            </div>
-            <div className="mt-2">
-              <Skeleton count={4}/>
-            </div>
-          </div> }
+        </ul>}
+        {!isLoading && !stores.length && empty}
+        {isLoading && <div className="p-4">
+          <Skeleton height={300}/>
+          <div className="mt-2">
+            <Skeleton width={160} height={24}/>
+          </div>
+          <div className="mt-2">
+            <Skeleton count={4}/>
+          </div>
+        </div>}
       </Layout>
     );
   }
@@ -108,7 +115,7 @@ class StoreIndex extends React.Component<IProps> {
     const timeInterval = setInterval(() => {
       const win = window as any;
       if (win.IWalletJS) {
-          win.IWalletJS.enable().then((account) => {
+        win.IWalletJS.enable().then((account) => {
           if (account) {
             clearInterval(timeInterval);
             this.props.setWallet(account);
@@ -136,8 +143,8 @@ function mapDispatchToProps(dispatch: Dispatch<any>) {
 }
 
 function mapStateToProps(state: any) {
-  const { wallet, errorMessage, showError, showSuccess, successMessage, isLoading } = state;
-  return { wallet, errorMessage, showError, showSuccess, successMessage, isLoading };
+  const {wallet, errorMessage, showError, showSuccess, successMessage, isLoading} = state;
+  return {wallet, errorMessage, showError, showSuccess, successMessage, isLoading};
 }
 
 export default withRouter(connect(

@@ -108,7 +108,7 @@ class StoreProduct extends React.Component<IProps> {
           <form>
             <div>
               <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                回购数量
+                回购 {repoInfo.symbol} 数量
               </label>
               <input
                 autoFocus

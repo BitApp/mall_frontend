@@ -206,14 +206,14 @@ class History extends React.Component<IProps> {
                     {prod.store.sellerWechat}
                     </div>
                   </div>
-                  <div className="mt-2 flex justify-between text-gray-700">
-                    <div>
-                    {t("iostAccount")}:
-                    </div>
-                    <div className="text-blue-500">
-                    {prod.store.sellerAccount}
-                    </div>
-                  </div>
+                  {/*<div className="mt-2 flex justify-between text-gray-700">*/}
+                    {/*<div>*/}
+                    {/*{t("iostAccount")}:*/}
+                    {/*</div>*/}
+                    {/*<div className="text-blue-500">*/}
+                    {/*{prod.store.sellerAccount}*/}
+                    {/*</div>*/}
+                  {/*</div>*/}
                 </div> }
                 { prod.data.status === STATUS.waiting &&
                   <button className="w-full button-bg hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md rounded-t-none"
