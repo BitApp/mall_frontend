@@ -85,8 +85,7 @@ class StoreIndex extends React.Component<IProps> {
               <div><img className="w-full" src={item.store.imgs[0]} alt={item.store.name}/></div>
               <div className="px-6 py-4 text-gray-700">
                 <div className="mt-1">
-                  <span className="w-12 inline-block">店铺:</span>
-                  <div>{item.store.name}</div>
+                  <span className="w-12 inline-block">店铺: {item.store.name}</span>
                 </div>
                 <div>
                   <span className="w-12 inline-block">简介:</span>
