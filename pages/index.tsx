@@ -93,8 +93,13 @@ class Index extends React.Component<IProps> {
             }}>
               <div><img className="w-full" src={ item.store.imgs[0] } alt={item.store.name}/></div>
               <div className="px-6 py-4 text-gray-700">
-                <div className="mt-1">{item.store.name}</div>
-                <div className="mt-1 text-sm text-gray-600">{item.store.desc}</div>
+                <div className="px-6 py-4 text-gray-700">
+                  <div className="mt-1">店铺: {item.store.name}</div>
+                  <div>
+                    <span className="w-12 inline-block">简介:</span>
+                    <div className="mt-1 text-sm text-gray-600">{item.store.desc}</div>
+                  </div>
+                </div>
                 <div className="mt-2">代币: {item.token ? item.token.symbol: null}</div>
                 {
                   item.recommendEndTime === 0 ?
