@@ -231,31 +231,38 @@ class StoreProduct extends React.Component<IProps> {
     );
   }
 
-  public exchange(prod) {
+  public async exchange(prod) {
     const win = window as any;
     const iost = win.IWalletJS.newIOST(IOST);
     const {wallet, t, id, router, storeInfo} = this.props;
     const that = this;
-    const tx = iost.callABI(
-      CONTRACT_ADDRESS,
-      "buyProduct",
-      [
-        prod.pId,
-      ],
-    );
-    tx.gasLimit = 300000;
-    tx.addApprove(prod.token, prod.price.toString());
-    iost.signAndSend(tx).on("pending", (trx) => {
-      console.info(trx);
-    })
-      .on("success", () => {
-        // 刷新数据
-        alert("兑换" + prod.name + "成功, 恭喜您已获得" + prod.name + ", " + "请主动联系卖家发货 " + storeInfo.sellerWechat);
-        router.push("/exchange/history");
+
+    const res = await axios.get(`${API_URL }/stores/${id}`);
+    if (res.data.data?.name) {
+      const tx = iost.callABI(
+        CONTRACT_ADDRESS,
+        "buyProduct",
+        [
+          prod.pId,
+        ],
+      );
+      tx.gasLimit = 300000;
+      tx.addApprove(prod.token, prod.price.toString());
+      iost.signAndSend(tx).on("pending", (trx) => {
+        console.info(trx);
       })
-      .on("failed", (failed) => {
-        that.props.showErrorMessage(chainErrorMessage(failed));
-      });
+        .on("success", () => {
+          // 刷新数据
+          alert("兑换" + prod.name + "成功, 恭喜您已获得" + prod.name + ", " + "请主动联系卖家发货 " + storeInfo.sellerWechat);
+          router.push("/exchange/history");
+        })
+        .on("failed", (failed) => {
+          that.props.showErrorMessage(chainErrorMessage(failed));
+        });
+    } else {
+      alert(`该店铺已下架`);
+      router.push("/store");
+    }
   }
 
   public repoExchange() {
