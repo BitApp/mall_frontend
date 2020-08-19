@@ -20,6 +20,7 @@ import {
 } from "../../store/actions";
 import {ACTIONS, API_URL, CONTRACT_ADDRESS, LANGS, SERVER_API_URL, TABS} from "../../utils/constant";
 import {chainErrorMessage} from "../../utils/helper";
+import store from ".";
 
 interface IProps extends WithTranslation {
   id: string;
@@ -50,8 +51,8 @@ class StoreProduct extends React.Component<IProps> {
     const id = query.id;
     const {dispatch} = store;
     dispatch({type: ACTIONS.BUSY});
-    const res = await axios.get(`${isServer ? SERVER_API_URL : API_URL }/stores/${id}/products`);
-    const storeRepo = await axios.get(`${isServer ? SERVER_API_URL : API_URL }/stores/${id}`);
+    const res = await axios.get(`${isServer ? SERVER_API_URL : API_URL }/stores/${encodeURIComponent(id)}/products`);
+    const storeRepo = await axios.get(`${isServer ? SERVER_API_URL : API_URL }/stores/${encodeURIComponent(id)}`);
     const products = res.data.data.products;
     const storeInfo = res.data.data.store;
     const repoInfo = storeRepo.data.data ? storeRepo.data.data.token : undefined;
@@ -77,7 +78,7 @@ class StoreProduct extends React.Component<IProps> {
   }
 
   public render() {
-    const {products, t, i18n, isLoading, id, repoInfo} = this.props;
+    const {products, t, i18n, isLoading, id, repoInfo, storeInfo} = this.props;
     const empty = <p className="mt-10 text-center text-gray-500 text-xs">
       {t("noProduct")}
     </p>;
@@ -87,7 +88,7 @@ class StoreProduct extends React.Component<IProps> {
       speed: 500,
     };
     return (
-      <Layout active={TABS.no} title={id} withBack={true} withSearch={false}>
+      <Layout active={TABS.no} title={storeInfo.name} withBack={true} withSearch={false}>
         <Tips/>
         <Modal
           isOpen={this.state.showRepo}
@@ -196,7 +197,7 @@ class StoreProduct extends React.Component<IProps> {
                 </div>
                 <div className="flex justify-between text-gray-800">
                   <div><span className="w-12 inline-block">店铺:</span></div>
-                  <div>{id}</div>
+                  <div>{storeInfo.name}</div>
                 </div>
                 <div className="flex justify-between text-gray-800 mt-2">
                   <div><span className="w-12 inline-block">价格:</span></div>
@@ -237,7 +238,7 @@ class StoreProduct extends React.Component<IProps> {
     const {wallet, t, id, router, storeInfo} = this.props;
     const that = this;
 
-    const res = await axios.get(`${API_URL }/stores/${id}`);
+    const res = await axios.get(`${API_URL }/stores/${encodeURIComponent(id)}`);
     if (res.data.data?.name) {
       const tx = iost.callABI(
         CONTRACT_ADDRESS,

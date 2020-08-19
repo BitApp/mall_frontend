@@ -8,17 +8,18 @@ import Slider from "react-slick";
 import { bindActionCreators, Dispatch } from "redux";
 import Layout from "../../components/Layout";
 import { withTranslation } from "../../i18n";
-import { updateSearchProducts } from "../../store/actions";
-import { API_URL, CATEGORIES, CATEGORIES_ARRAY, LANGS, TABS } from "../../utils/constant";
+import { API_URL, LANGS, TABS } from "../../utils/constant";
 
 interface IProps extends WithTranslation {
-  searchProducts: any[];
   router: SingletonRouter;
   lang: LANGS;
-  updateSearchProducts: (searchProducts: any[]) => Promise<void>;
 }
 
-class Search extends React.Component<IProps> {
+interface IState {
+  stores: any[];
+}
+
+class Search extends React.Component<IProps, IState> {
 
   public static async getInitialProps() {
     // By returning { props: posts }, the Blog component
@@ -29,14 +30,19 @@ class Search extends React.Component<IProps> {
   }
 
   private productName: string = "";
-  private productCate: string = CATEGORIES.all;
+  private searchTime: NodeJS.Timeout | null;
 
   constructor(props) {
     super(props);
+    this.state = {
+      stores: [],
+    };
+    this.searchTime = null;
   }
 
   public render() {
-    const { searchProducts, router, t, i18n } = this.props;
+    const { router, t, i18n } = this.props;
+    const { stores } = this.state;
     const empty = <p className="mt-10 text-center text-gray-500 text-xs">
       {t("noProduct")}
     </p>;
@@ -50,128 +56,87 @@ class Search extends React.Component<IProps> {
         <div className="py-2 px-4">
           <input onChange={ (val) => this.search(val) }
           className="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal"
-          placeholder={t("productName")}></input>
-          <label className="block text-gray-500 text-sm font-bold mb-2 ml-1 mt-2">
-          {t("categories")}
-          </label>
-          <div className="inline-block relative w-full">
-            <select value={this.productCate} className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded leading-tight focus:outline-none focus:shadow-outline" onChange={(evt) => this.chooseType(evt)}>
-              {
-                CATEGORIES_ARRAY.map((item, index) => {
-                  return <option key={index} value={item}>{i18n.language === LANGS.cn ? t(item) : item}</option>;
-                })
-              }
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-              <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-            </div>
-          </div>
-          { searchProducts.length > 0 && <ul className="pt-4">
+          placeholder="店铺或商品名称"></input>
+          { stores.length > 0 && <ul className="pt-4 mt-2">
             {
-              searchProducts.map((prod, key) => (
+              stores.map((store, key) => (
               <li key={key} className="rounded overflow-hidden shadow-lg mb-10"
-              onClick={ () => router.push("/product?pid=" + prod.id) }>
-                {/* <img className="w-full" src={ prod.image.url } alt={prod.name}/> */}
-                <Slider {...settings}>
-                  {prod.images.map((item, index) => (
-                    <div key={index}>
-                      <img className="w-full" src={item.url} />
-                    </div>
-                  ))}
-                </Slider>
-                <div className="px-6 py-4">
-                  <div className="font-bold text-xl mb-2">
-                    <div className="flex justify-between">
-                      <div className="font-bold text-xl mb-2">
-                        { i18n.language === LANGS.cn ? prod.name : prod.name_en }
-                      </div>
-                      <div>
-                        {
-                          prod.types.map((item, index) => {
-                          return <span className="mr-1 text-xs text-gray-500" key={index}>
-                            {i18n.language === LANGS.cn ? t(item.type) : item.type}
-                            </span>;
-                          })
-                        }
-                      </div>
+              onClick={ () => router.push("/store/" + store.owner) }>
+                <div>
+                  <img className="w-full" src={store.imgs[0]} alt={store.name}/></div>
+                  <div className="px-6 py-4 text-gray-700">
+                    <div className="mt-1 font-semibold">{store.name}</div>
+                    <div>
+                      <span className="w-12 inline-block text-sm">简介:</span>
+                      <div className="mt-1 text-sm text-gray-600">{store.desc}</div>
                     </div>
                   </div>
-                  <div className=" mt-2 text-sm">
-                    <div className="inline-block font-semibold text-gray-700">
-                      {t("start")}: {moment(prod.startTime).format("YYYY-MM-DD, H:mm:ss")}</div>
-                  </div>
-                  <div className="text-blue-500 text-sm mt-1 mb-4">
-                    {t("viewDetail")}
-                  </div>
-                  <p className="text-gray-700 text-sm">
-                    { i18n.language === LANGS.cn ? prod.desc : prod.desc_en }
-                  </p>
-                </div>
-                <div className="px-6 py-4 bg-gray-200 text-sm">
-                  <div className="flex justify-between text-gray-700">
-                    <div><span className="w-12 inline-block">
-                      {t("startPrice")}: </span><span>{prod.basePrice} IOST</span>
-                    </div>
-                    <div><span className="w-12 inline-block">{t("stepPrice")}:
-                    </span><span>{prod.priceStep} IOST</span></div>
-                  </div>
-                </div>
+                  <div className="border-t mb-4 mx-2"></div>
+                  {store.products.length > 0 && <ul className="px-4">
+                    {store.products.map((prod, prodKey) => (
+                      <li key={prodKey} className="overflow-hidden flex justify-between mb-2">
+                        <Slider {...settings}>
+                          {prod.imgs.map((item, index) => (
+                            <div key={index}>
+                              <img style={{height: "4rem", width: "4rem"}} src={item}/>
+                            </div>
+                          ))}
+                        </Slider>
+                        <div className="w-48">
+                          <div>
+                            <div className="font-bold mb-1">
+                              {i18n.language === LANGS.cn ? prod.name : prod.name}
+                            </div>
+                            <div className="text-gray-600 text-sm leading-3">
+                              {i18n.language === LANGS.cn ? prod.desc : prod.desc}
+                            </div>
+                          </div>
+                          <div className="flex justify-between text-gray-800 mt-2">
+                            <div><span className="w-12 inline-block">价格:</span></div>
+                            <div>{prod.price} <span className="font-semibold">{prod.token}</span></div>
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>}
               </li>
             ))}
           </ul> }
         </div>
-        { !searchProducts.length && empty}
+        { !stores.length && empty}
       </Layout>
     );
   }
 
-  public filterCategory(products) {
-    if (this.productCate === CATEGORIES.all) {
-      return products;
-    } else {
-      const result = products.filter((item) => {
-        const types = item.types;
-        return types.find((typeItem) => {
-          return typeItem.type === this.productCate;
-        });
-      });
-      return result;
-    }
-  }
-
   public async search(evt) {
     this.productName = evt.target.value;
-    if (this.productName) {
-      const res: any = await axios.get(`${API_URL }/products?name_contains=${ this.productName }`);
-      this.props.updateSearchProducts(this.filterCategory(res.data));
-    } else {
-      this.props.updateSearchProducts([]);
+    if (this.searchTime) {
+      window.clearTimeout(this.searchTime);
     }
-  }
-
-  public async chooseType(evt) {
-    this.productCate = evt.target.value;
-    if (this.productName) {
-      const res: any = await axios.get(`${API_URL }/products?name_contains=${ this.productName }`);
-      this.props.updateSearchProducts(this.filterCategory(res.data));
-    } else {
-      this.props.updateSearchProducts(this.filterCategory([]));
-    }
+    this.searchTime = setTimeout(async () => {
+      if (this.productName) {
+        const res: any = await axios.get(`${API_URL }/products?search=${ this.productName }`);
+        this.setState({
+          stores: res.data.data,
+        });
+      } else {
+        this.setState({stores: []});
+      }
+    }, 600);
   }
 }
 
 function mapDispatchToProps(dispatch: Dispatch<any>) {
   return bindActionCreators(
     {
-      updateSearchProducts,
     },
     dispatch,
   );
 }
 
 function mapStateToProps(state: any) {
-  const { lang, searchProducts } = state;
-  return { lang, searchProducts };
+  const { lang } = state;
+  return { lang };
 }
 
 export default withRouter(connect(
