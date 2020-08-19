@@ -74,11 +74,9 @@ class Search extends React.Component<IProps, IState> {
                   {store.products.length > 0 && (<div><div className="border-t mb-4 mx-2"></div><ul className="px-4">
                     {store.products.map((prod, prodKey) => (
                       <li key={prodKey} className="overflow-hidden flex justify-between mb-2">
-                        {prod.imgs.map((item, index) => (
-                          <div key={index}>
-                            <img style={{height: "4rem", width: "4rem"}} src={item}/>
-                          </div>
-                        ))}
+                        <div>
+                          <img style={{height: "4rem", width: "4rem"}} src={prod.imgs[0]}/>
+                        </div>
                         <div className="w-48">
                           <div>
                             <div className="font-bold mb-1">
