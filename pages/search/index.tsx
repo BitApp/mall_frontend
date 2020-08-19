@@ -71,23 +71,20 @@ class Search extends React.Component<IProps, IState> {
                       <div className="mt-1 text-sm text-gray-600">{store.desc}</div>
                     </div>
                   </div>
-                  <div className="border-t mb-4 mx-2"></div>
-                  {store.products.length > 0 && <ul className="px-4">
+                  {store.products.length > 0 && (<div><div className="border-t mb-4 mx-2"></div><ul className="px-4">
                     {store.products.map((prod, prodKey) => (
                       <li key={prodKey} className="overflow-hidden flex justify-between mb-2">
-                        <Slider {...settings}>
-                          {prod.imgs.map((item, index) => (
-                            <div key={index}>
-                              <img style={{height: "4rem", width: "4rem"}} src={item}/>
-                            </div>
-                          ))}
-                        </Slider>
+                        {prod.imgs.map((item, index) => (
+                          <div key={index}>
+                            <img style={{height: "4rem", width: "4rem"}} src={item}/>
+                          </div>
+                        ))}
                         <div className="w-48">
                           <div>
                             <div className="font-bold mb-1">
                               {i18n.language === LANGS.cn ? prod.name : prod.name}
                             </div>
-                            <div className="text-gray-600 text-sm leading-3">
+                            <div className="text-gray-600 text-sm leading-4">
                               {i18n.language === LANGS.cn ? prod.desc : prod.desc}
                             </div>
                           </div>
@@ -98,7 +95,7 @@ class Search extends React.Component<IProps, IState> {
                         </div>
                       </li>
                     ))}
-                  </ul>}
+                  </ul></div>)}
               </li>
             ))}
           </ul> }
