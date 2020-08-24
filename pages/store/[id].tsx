@@ -113,7 +113,9 @@ class StoreProduct extends React.Component<IProps> {
               </label>
               <input
                 autoFocus
-                onChange={(evt) => {this.setState({repoAmount: Number(evt.target.value)});}}
+                onChange={(evt) => {
+                  this.setState({repoAmount: Number(evt.target.value)});
+                }}
                 onBlur={(evt) => {
                   const tmp = evt.target.value;
                   const value = tmp.replace(/[^1-9]{0,1}(\d*(?:\.\d{0,2})?).*$/g, "$1");
@@ -161,8 +163,9 @@ class StoreProduct extends React.Component<IProps> {
               </span>
                 </div>
                 <div className="leading-8">兑换余额:
-                  <span className="font-semibold ml-1">{repoInfo.repoBalance} <small>IOST</small></span></div>
-                </div>
+                  <span className="font-semibold ml-1">{repoInfo.repoBalance}
+                    <small>IOST</small></span></div>
+              </div>
               <button className="button-bg hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md"
                       onClick={() => this.setState({showRepo: true})}>
                 兑换
@@ -203,6 +206,10 @@ class StoreProduct extends React.Component<IProps> {
                   <div><span className="w-12 inline-block">价格:</span></div>
                   <div>{prod.price} {prod.token}</div>
                 </div>
+                <div className="flex justify-between text-gray-800 mt-2">
+                  <div><span className="w-12 inline-block">库存:</span></div>
+                  <div>{prod.quantity}</div>
+                </div>
               </div>
               <div className="px-4 py-4 bg-gray-100 text-sm">
                 <p className="text-gray-600 text-sm">
@@ -237,7 +244,10 @@ class StoreProduct extends React.Component<IProps> {
     const iost = win.IWalletJS.newIOST(IOST);
     const {wallet, t, id, router, storeInfo} = this.props;
     const that = this;
-
+    if (Number(prod.quantity) <= 0 ) {
+      alert("物品库存不足，请联系店家增加库存");
+      return
+    }
     const res = await axios.get(`${API_URL }/stores/${encodeURIComponent(id)}`);
     if (res.data.data?.name) {
       const tx = iost.callABI(
@@ -269,7 +279,7 @@ class StoreProduct extends React.Component<IProps> {
   public repoExchange() {
     const {id, repoInfo} = this.props;
     if (this.state.repoAmount > 0) {
-      if (confirm(`确定要兑换成IOST吗?`)) {
+      if (confirm(`本次最多使用 ${this.state.repoAmount} ${repoInfo.symbol} 兑换${Math.floor(this.state.repoAmount * Number(repoInfo.repoRate))} IOST`)) {
         const win = window as any;
         const iost = win.IWalletJS.newIOST(IOST);
         // const { wallet, t } = this.props;
