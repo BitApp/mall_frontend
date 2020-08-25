@@ -82,7 +82,7 @@ class StoreProduct extends React.Component<IProps, IState> {
   }
 
   public render() {
-    const {products, t, i18n, isLoading, id, storeInfo, repoInfo} = this.props;
+    const {products, t, i18n, isLoading, id, storeInfo} = this.props;
     const empty = <p className="mt-10 text-center text-gray-500 text-xs">
       {t("noProduct")}
     </p>;
@@ -125,7 +125,9 @@ class StoreProduct extends React.Component<IProps, IState> {
                   const value = tmp.replace(/[^1-9]{0,1}(\d*(?:\.\d{0,2})?).*$/g, "$1");
                   const storeRepo = await axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`);
                   this.setState({repoInfo: storeRepo.data.data.token});
-                  console.log(this.state.repoInfo, Number(value) * Number(this.state.repoInfo.repoRate) > this.state.repoInfo.repoBalance)
+
+                  console.log(this.state.repoInfo, Number(value))
+
                   if (Number(value) * Number(this.state.repoInfo.repoRate) > this.state.repoInfo.repoBalance) {
                     let repoAmount = this.state.repoInfo.repoBalance / Number(this.state.repoInfo.repoRate);
                     this.setState({repoAmount: repoAmount});
