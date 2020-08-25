@@ -74,8 +74,6 @@ class StoreProduct extends React.Component<IProps, IState> {
 
   constructor(props) {
     super(props);
-    console.log("1")
-    console.log(props.repoInfo)
     this.state = {
       showRepo: false,
       repoAmount: 0,
@@ -83,7 +81,7 @@ class StoreProduct extends React.Component<IProps, IState> {
     }
   }
 
-  public async render() {
+  public render() {
     const {products, t, i18n, isLoading, id, storeInfo, repoInfo} = this.props;
     const empty = <p className="mt-10 text-center text-gray-500 text-xs">
       {t("noProduct")}
