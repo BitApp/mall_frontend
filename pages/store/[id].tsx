@@ -126,10 +126,9 @@ class StoreProduct extends React.Component<IProps, IState> {
                   const storeRepo = await axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`);
                   this.setState({repoInfo: storeRepo.data.data.token});
 
-                  console.log(this.state.repoInfo, Number(value))
-
                   if (Number(value) * Number(this.state.repoInfo.repoRate) > this.state.repoInfo.repoBalance) {
                     let repoAmount = this.state.repoInfo.repoBalance / Number(this.state.repoInfo.repoRate);
+                    console.log(repoAmount)
                     this.setState({repoAmount: repoAmount});
                     evt.target.value = repoAmount.toString();
                     alert(`超出可回购余额\r\n本次最多使用 ${repoAmount} ${this.state.repoInfo.symbol} 兑换${(repoAmount * Number(this.state.repoInfo.repoRate)).toFixed(8)} IOST`);
