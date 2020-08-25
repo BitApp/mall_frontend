@@ -77,6 +77,7 @@ class StoreProduct extends React.Component<IProps> {
 
   constructor(props) {
     super(props);
+    this.setState({repoInfo: props.repoInfo})
   }
 
   public render() {
