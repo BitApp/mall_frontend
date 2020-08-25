@@ -124,7 +124,8 @@ class StoreProduct extends React.Component<IProps, IState> {
                   const tmp = evt.target.value;
                   const value = tmp.replace(/[^1-9]{0,1}(\d*(?:\.\d{0,2})?).*$/g, "$1");
                   const storeRepo = await axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`);
-                  this.setState({repoInfo: storeRepo.data.data.token})
+                  this.setState({repoInfo: storeRepo.data.data.token});
+                  console.log(this.state.repoInfo, Number(value) * Number(this.state.repoInfo.repoRate) > this.state.repoInfo.repoBalance)
                   if (Number(value) * Number(this.state.repoInfo.repoRate) > this.state.repoInfo.repoBalance) {
                     let repoAmount = this.state.repoInfo.repoBalance / Number(this.state.repoInfo.repoRate);
                     this.setState({repoAmount: repoAmount});
