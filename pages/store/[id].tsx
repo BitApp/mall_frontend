@@ -127,8 +127,6 @@ class StoreProduct extends React.Component<IProps, IState> {
                     if (Number(value) * Number(this.state.repoInfo.repoRate) > this.state.repoInfo.repoBalance) {
                       let repoAmount = this.state.repoInfo.repoBalance / Number(this.state.repoInfo.repoRate);
                       this.setState({repoAmount: repoAmount});
-                      console.log(this.state.repoAmount.toString())
-                      // evt.target.value = this.state.repoAmount.toString();
                       alert(`超出可回购余额\r\n本次最多使用 ${repoAmount} ${this.state.repoInfo.symbol} 兑换${(repoAmount * Number(this.state.repoInfo.repoRate)).toFixed(8)} IOST`);
                     } else {
                       this.setState({repoAmount: Number(value)});
