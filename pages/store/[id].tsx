@@ -42,6 +42,7 @@ interface IProps extends WithTranslation {
 interface IState {
   showRepo: boolean;
   repoAmount: number;
+  repoInfo?: any
 }
 
 class StoreProduct extends React.Component<IProps> {
