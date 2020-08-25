@@ -48,6 +48,8 @@ interface IState {
 class StoreProduct extends React.Component<IProps, IState> {
 
   public static async getInitialProps({req, store, query}) {
+    console.log("2")
+
     const isServer = !!req;
     const id = query.id;
     const {dispatch} = store;
@@ -72,6 +74,8 @@ class StoreProduct extends React.Component<IProps, IState> {
 
   constructor(props) {
     super(props);
+    console.log("1")
+    console.log(props.repoInfo)
     this.state = {
       showRepo: false,
       repoAmount: 0,
