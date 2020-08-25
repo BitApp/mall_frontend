@@ -77,6 +77,11 @@ class StoreProduct extends React.Component<IProps> {
 
   constructor(props) {
     super(props);
+    this.state = {
+      repoInfo: this.props.repoInfo,
+      showRepo: false,
+      repoAmount: 0,
+    }
   }
 
   public async render() {
@@ -89,7 +94,6 @@ class StoreProduct extends React.Component<IProps> {
       infinite: true,
       speed: 500,
     };
-    this.setState({repoInfo: repoInfo});
     return (
       <Layout active={TABS.no} title={storeInfo.name} withBack={true} withSearch={false}>
         <Tips/>
