@@ -42,7 +42,7 @@ interface IProps extends WithTranslation {
 interface IState {
   showRepo: boolean;
   repoAmount: number;
-  repoInfo?: any
+  repoInfo: any
 }
 
 class StoreProduct extends React.Component<IProps> {
@@ -72,6 +72,7 @@ class StoreProduct extends React.Component<IProps> {
   public state: IState = {
     showRepo: false,
     repoAmount: 0,
+    repoInfo: undefined
   };
 
   constructor(props) {
@@ -79,7 +80,7 @@ class StoreProduct extends React.Component<IProps> {
   }
 
   public render() {
-    const {products, t, i18n, isLoading, id, repoInfo, storeInfo} = this.props;
+    const {products, t, i18n, isLoading, id, storeInfo} = this.props;
     const empty = <p className="mt-10 text-center text-gray-500 text-xs">
       {t("noProduct")}
     </p>;
@@ -110,7 +111,7 @@ class StoreProduct extends React.Component<IProps> {
           <form>
             <div>
               <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                回购 {repoInfo?.symbol} 数量
+                回购 {this.state.repoInfo?.symbol} 数量
               </label>
               <input
                 autoFocus
@@ -121,12 +122,12 @@ class StoreProduct extends React.Component<IProps> {
                   const tmp = evt.target.value;
                   const value = tmp.replace(/[^1-9]{0,1}(\d*(?:\.\d{0,2})?).*$/g, "$1");
                   const storeRepo = await axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`);
-                  const repoBalance = storeRepo.data.data.token.repoBalance;
-                  if (Number(value) * Number(repoInfo.repoRate) > repoBalance) {
-                    let repoAmount = repoBalance / Number(repoInfo.repoRate);
+                  this.setState({repoInfo: storeRepo.data.data.token})
+                  if (Number(value) * Number(this.state.repoInfo.repoRate) > this.state.repoInfo.repoBalance) {
+                    let repoAmount = this.state.repoInfo.repoBalance / Number(this.state.repoInfo.repoRate);
                     this.setState({repoAmount: repoAmount});
                     evt.target.value = repoAmount.toString();
-                    alert(`超出可回购余额\r\n本次最多使用 ${repoAmount} ${repoInfo.symbol} 兑换${(repoAmount * Number(repoInfo.repoRate)).toFixed(8)} IOST`);
+                    alert(`超出可回购余额\r\n本次最多使用 ${repoAmount} ${this.state.repoInfo.symbol} 兑换${(repoAmount * Number(this.state.repoInfo.repoRate)).toFixed(8)} IOST`);
                   } else {
                     this.setState({repoAmount: Number(value)});
                   }
@@ -155,19 +156,19 @@ class StoreProduct extends React.Component<IProps> {
           </form>
         </Modal>
         {
-          repoInfo && repoInfo.repo &&
+          this.state.repoInfo && this.state.repoInfo.repo &&
           <ul className="p-4 pb-0">
             <li className="bg-white flex justify-between border px-4 py-2 align-middle rounded-md">
               <div className="text-gray-800">
                 <div className="leading-8">兑换比例:
                   <span
                     className="ml-1 font-semibold">1 <small>IOST</small>
-                    ={(Number((1 / repoInfo.repoRate).toFixed(8)))}
-                    <small> {repoInfo.symbol}</small>
+                    ={(Number((1 / this.state.repoInfo.repoRate).toFixed(8)))}
+                    <small> {this.state.repoInfo.symbol}</small>
               </span>
                 </div>
                 <div className="leading-8">兑换余额:
-                  <span className="font-semibold ml-1">{repoInfo.repoBalance}
+                  <span className="font-semibold ml-1">{this.state.repoInfo.repoBalance}
                     <small>IOST</small></span></div>
               </div>
               <button className="button-bg hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md"
@@ -286,9 +287,9 @@ class StoreProduct extends React.Component<IProps> {
   }
 
   public repoExchange() {
-    const {id, repoInfo} = this.props;
+    const {id} = this.props;
     if (this.state.repoAmount > 0) {
-      if (confirm(`确认使用 ${this.state.repoAmount} ${repoInfo.symbol} 兑换${(this.state.repoAmount * Number(repoInfo.repoRate)).toFixed(8)} IOST`)) {
+      if (confirm(`确认使用 ${this.state.repoAmount} ${this.state.repoInfo.symbol} 兑换${(this.state.repoAmount * Number(this.state.repoInfo.repoRate)).toFixed(8)} IOST`)) {
         const win = window as any;
         const iost = win.IWalletJS.newIOST(IOST);
         // const { wallet, t } = this.props;
@@ -302,7 +303,7 @@ class StoreProduct extends React.Component<IProps> {
           ],
         );
         tx.gasLimit = 300000;
-        tx.addApprove(repoInfo.symbol, this.state.repoAmount.toString());
+        tx.addApprove(this.state.repoInfo.symbol, this.state.repoAmount.toString());
         this.setState({showRepo: false});
         iost.signAndSend(tx).on("pending", (trx) => {
           console.info(trx);
