@@ -48,8 +48,6 @@ interface IState {
 class StoreProduct extends React.Component<IProps, IState> {
 
   public static async getInitialProps({req, store, query}) {
-    console.log("2")
-
     const isServer = !!req;
     const id = query.id;
     const {dispatch} = store;
@@ -120,15 +118,16 @@ class StoreProduct extends React.Component<IProps, IState> {
                 onChange={(evt) => {
                   this.setState({repoAmount: Number(evt.target.value)});
                 }}
+                value={this.state.repoAmount}
                 onBlur={(evt) => {
                   const tmp = evt.target.value;
                   const value = tmp.replace(/[^1-9]{0,1}(\d*(?:\.\d{0,2})?).*$/g, "$1");
                   axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`).then((storeRepo) => {
                     this.setState({repoInfo: storeRepo.data.data.token});
-
                     if (Number(value) * Number(this.state.repoInfo.repoRate) > this.state.repoInfo.repoBalance) {
                       let repoAmount = this.state.repoInfo.repoBalance / Number(this.state.repoInfo.repoRate);
                       this.setState({repoAmount: repoAmount});
+                      console.log(this.state.repoAmount.toString())
                       evt.target.value = this.state.repoAmount.toString();
                       alert(`超出可回购余额\r\n本次最多使用 ${repoAmount} ${this.state.repoInfo.symbol} 兑换${(repoAmount * Number(this.state.repoInfo.repoRate)).toFixed(8)} IOST`);
                     } else {
