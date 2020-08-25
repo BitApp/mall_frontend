@@ -120,20 +120,21 @@ class StoreProduct extends React.Component<IProps, IState> {
                 onChange={(evt) => {
                   this.setState({repoAmount: Number(evt.target.value)});
                 }}
-                onBlur={async (evt) => {
+                onBlur={(evt) => {
                   const tmp = evt.target.value;
                   const value = tmp.replace(/[^1-9]{0,1}(\d*(?:\.\d{0,2})?).*$/g, "$1");
-                  const storeRepo = await axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`);
-                  this.setState({repoInfo: storeRepo.data.data.token});
+                  axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`).then((storeRepo) => {
+                    this.setState({repoInfo: storeRepo.data.data.token});
 
-                  if (Number(value) * Number(this.state.repoInfo.repoRate) > this.state.repoInfo.repoBalance) {
-                    let repoAmount = this.state.repoInfo.repoBalance / Number(this.state.repoInfo.repoRate);
-                    this.setState({repoAmount: repoAmount});
-                    evt.target.value = this.state.repoAmount.toString();
-                    alert(`超出可回购余额\r\n本次最多使用 ${repoAmount} ${this.state.repoInfo.symbol} 兑换${(repoAmount * Number(this.state.repoInfo.repoRate)).toFixed(8)} IOST`);
-                  } else {
-                    this.setState({repoAmount: Number(value)});
-                  }
+                    if (Number(value) * Number(this.state.repoInfo.repoRate) > this.state.repoInfo.repoBalance) {
+                      let repoAmount = this.state.repoInfo.repoBalance / Number(this.state.repoInfo.repoRate);
+                      this.setState({repoAmount: repoAmount});
+                      evt.target.value = this.state.repoAmount.toString();
+                      alert(`超出可回购余额\r\n本次最多使用 ${repoAmount} ${this.state.repoInfo.symbol} 兑换${(repoAmount * Number(this.state.repoInfo.repoRate)).toFixed(8)} IOST`);
+                    } else {
+                      this.setState({repoAmount: Number(value)});
+                    }
+                  });
                 }}
                 min="0"
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -252,7 +253,7 @@ class StoreProduct extends React.Component<IProps, IState> {
     const iost = win.IWalletJS.newIOST(IOST);
     const {wallet, t, id, router, storeInfo} = this.props;
     const that = this;
-    if (Number(prod.quantity) <= 0 ) {
+    if (Number(prod.quantity) <= 0) {
       alert("物品库存不足，请联系店家增加库存");
       return
     }
@@ -321,7 +322,7 @@ class StoreProduct extends React.Component<IProps, IState> {
             const msg = chainErrorMessage(failed);
             if (msg.includes("RepoBalance not enough")) {
               that.props.showErrorMessage("可兑换的IOST数量不足，请刷新页面重新兑换");
-            }else {
+            } else {
               that.props.showErrorMessage(msg);
             }
           });
