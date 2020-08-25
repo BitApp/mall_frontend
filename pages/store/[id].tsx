@@ -69,6 +69,10 @@ class StoreProduct extends React.Component<IProps> {
     };
   }
 
+  componentWillReceiveProps(props) {
+    this.setState({repoInfo: props.repoInfo})
+  }
+
   public state: IState = {
     showRepo: false,
     repoAmount: 0,
@@ -77,11 +81,6 @@ class StoreProduct extends React.Component<IProps> {
 
   constructor(props) {
     super(props);
-    this.state = {
-      repoInfo: this.props.repoInfo,
-      showRepo: false,
-      repoAmount: 0,
-    }
   }
 
   public async render() {
