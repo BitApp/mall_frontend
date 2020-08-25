@@ -116,11 +116,13 @@ class StoreProduct extends React.Component<IProps> {
                 onChange={(evt) => {
                   this.setState({repoAmount: Number(evt.target.value)});
                 }}
-                onBlur={(evt) => {
+                onBlur={async (evt) => {
                   const tmp = evt.target.value;
                   const value = tmp.replace(/[^1-9]{0,1}(\d*(?:\.\d{0,2})?).*$/g, "$1");
-                  if (Number(value) * Number(repoInfo.repoRate) > Number(repoInfo.repoBalance)) {
-                    let repoAmount = Number(repoInfo.repoBalance) / Number(repoInfo.repoRate);
+                  const storeRepo = await axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`);
+                  const repoBalance = storeRepo.data.data.token.repoBalance;
+                  if (Number(value) * Number(repoInfo.repoRate) > Number(repoBalance)) {
+                    let repoAmount = Number(repoBalance) / Number(repoInfo.repoRate);
                     this.setState({repoAmount: repoAmount});
                     evt.target.value = repoAmount.toString();
                     alert(`超出可回购余额\r\n本次最多使用 ${repoAmount} ${repoInfo.symbol} 兑换${(repoAmount * Number(repoInfo.repoRate)).toFixed(8)} IOST`);
@@ -304,12 +306,19 @@ class StoreProduct extends React.Component<IProps> {
         iost.signAndSend(tx).on("pending", (trx) => {
           console.info(trx);
         })
-          .on("success", (result) => {
+          .on("success", async (result) => {
             // 刷新数据
-            that.props.showSuccessMessage("兑换成功，请等待30左右查询到账");
+            that.props.showSuccessMessage("兑换成功，请等待30s左右查询到账");
+            const storeRepo = await axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`);
+            this.setState({repoInfo: storeRepo.data.data.token})
           })
           .on("failed", (failed) => {
-            that.props.showErrorMessage(chainErrorMessage(failed));
+            const msg = chainErrorMessage(failed);
+            if (msg.includes("RepoBalance not enough")) {
+              that.props.showErrorMessage("可兑换的IOST数量不足，请刷新页面重新兑换");
+            }else {
+              that.props.showErrorMessage(msg);
+            }
           });
       }
     }
