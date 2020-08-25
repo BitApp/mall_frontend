@@ -45,7 +45,7 @@ interface IState {
   repoInfo: any
 }
 
-class StoreProduct extends React.Component<IProps> {
+class StoreProduct extends React.Component<IProps, IState> {
 
   public static async getInitialProps({req, store, query}) {
     const isServer = !!req;
