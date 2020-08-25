@@ -77,11 +77,10 @@ class StoreProduct extends React.Component<IProps> {
 
   constructor(props) {
     super(props);
-    this.setState({repoInfo: props.repoInfo})
   }
 
-  public render() {
-    const {products, t, i18n, isLoading, id, storeInfo} = this.props;
+  public async render() {
+    const {products, t, i18n, isLoading, id, storeInfo, repoInfo} = this.props;
     const empty = <p className="mt-10 text-center text-gray-500 text-xs">
       {t("noProduct")}
     </p>;
@@ -90,6 +89,7 @@ class StoreProduct extends React.Component<IProps> {
       infinite: true,
       speed: 500,
     };
+    this.setState({repoInfo: repoInfo});
     return (
       <Layout active={TABS.no} title={storeInfo.name} withBack={true} withSearch={false}>
         <Tips/>
@@ -313,7 +313,6 @@ class StoreProduct extends React.Component<IProps> {
             // 刷新数据
             that.props.showSuccessMessage("兑换成功，请等待30s左右查询到账");
             const storeRepo = await axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`);
-            console.log(storeRepo)
             this.setState({repoInfo: storeRepo.data.data.token})
           })
           .on("failed", (failed) => {
