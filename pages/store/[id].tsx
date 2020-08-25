@@ -69,18 +69,14 @@ class StoreProduct extends React.Component<IProps> {
     };
   }
 
-  componentWillReceiveProps(props) {
-    this.setState({repoInfo: props.repoInfo})
-  }
-
-  public state: IState = {
-    showRepo: false,
-    repoAmount: 0,
-    repoInfo: undefined
-  };
 
   constructor(props) {
     super(props);
+    this.state = {
+      showRepo: false,
+      repoAmount: 0,
+      repoInfo: props.repoInfo
+    }
   }
 
   public async render() {
