@@ -121,8 +121,8 @@ class StoreProduct extends React.Component<IProps> {
                   const value = tmp.replace(/[^1-9]{0,1}(\d*(?:\.\d{0,2})?).*$/g, "$1");
                   const storeRepo = await axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`);
                   const repoBalance = storeRepo.data.data.token.repoBalance;
-                  if (Number(value) * Number(repoInfo.repoRate) > Number(repoBalance)) {
-                    let repoAmount = Number(repoBalance) / Number(repoInfo.repoRate);
+                  if (Number(value) * Number(repoInfo.repoRate) > repoBalance) {
+                    let repoAmount = repoBalance / Number(repoInfo.repoRate);
                     this.setState({repoAmount: repoAmount});
                     evt.target.value = repoAmount.toString();
                     alert(`超出可回购余额\r\n本次最多使用 ${repoAmount} ${repoInfo.symbol} 兑换${(repoAmount * Number(repoInfo.repoRate)).toFixed(8)} IOST`);
@@ -310,6 +310,7 @@ class StoreProduct extends React.Component<IProps> {
             // 刷新数据
             that.props.showSuccessMessage("兑换成功，请等待30s左右查询到账");
             const storeRepo = await axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`);
+            console.log(storeRepo)
             this.setState({repoInfo: storeRepo.data.data.token})
           })
           .on("failed", (failed) => {
