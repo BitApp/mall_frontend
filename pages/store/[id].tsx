@@ -120,9 +120,9 @@ class StoreProduct extends React.Component<IProps> {
                   const tmp = evt.target.value;
                   const value = tmp.replace(/[^1-9]{0,1}(\d*(?:\.\d{0,2})?).*$/g, "$1");
                   if (Number(value) * Number(repoInfo.repoRate) > Number(repoInfo.repoBalance)) {
-                    alert("超出可回购余额");
                     this.setState({repoAmount: Number(repoInfo.repoBalance) / Number(repoInfo.repoRate)});
                     evt.target.value = (Number(repoInfo.repoBalance) / Number(repoInfo.repoRate)).toString();
+                    alert(`超出可回购余额\r\n本次最多使用 ${this.state.repoAmount} ${repoInfo.symbol} 兑换${(this.state.repoAmount * Number(repoInfo.repoRate)).toFixed(8)} IOST`);
                   } else {
                     this.setState({repoAmount: Number(value)});
                   }
@@ -268,7 +268,12 @@ class StoreProduct extends React.Component<IProps> {
           router.push("/exchange/history");
         })
         .on("failed", (failed) => {
-          that.props.showErrorMessage(chainErrorMessage(failed));
+          const msg = chainErrorMessage(failed);
+          if (msg.includes("insufficient product inventory")) {
+            that.props.showErrorMessage("物品库存不足，请联系店家增加库存")
+          } else {
+            that.props.showErrorMessage(chainErrorMessage(failed));
+          }
         });
     } else {
       alert(`该店铺已下架`);
@@ -279,7 +284,7 @@ class StoreProduct extends React.Component<IProps> {
   public repoExchange() {
     const {id, repoInfo} = this.props;
     if (this.state.repoAmount > 0) {
-      if (confirm(`本次最多使用 ${this.state.repoAmount} ${repoInfo.symbol} 兑换${Math.floor(this.state.repoAmount * Number(repoInfo.repoRate))} IOST`)) {
+      if (confirm(`确认使用 ${this.state.repoAmount} ${repoInfo.symbol} 兑换${(this.state.repoAmount * Number(repoInfo.repoRate)).toFixed(8)} IOST`)) {
         const win = window as any;
         const iost = win.IWalletJS.newIOST(IOST);
         // const { wallet, t } = this.props;
