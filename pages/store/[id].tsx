@@ -289,42 +289,54 @@ class StoreProduct extends React.Component<IProps, IState> {
 
   public repoExchange() {
     const {id} = this.props;
-    if (this.state.repoAmount > 0) {
-      if (confirm(`确认使用 ${this.state.repoAmount} ${this.state.repoInfo.symbol} 兑换${(this.state.repoAmount * Number(this.state.repoInfo.repoRate)).toFixed(8)} IOST`)) {
-        const win = window as any;
-        const iost = win.IWalletJS.newIOST(IOST);
-        // const { wallet, t } = this.props;
-        const that = this;
-        const tx = iost.callABI(
-          CONTRACT_ADDRESS,
-          "exchange",
-          [
-            id,
-            String(this.state.repoAmount),
-          ],
-        );
-        tx.gasLimit = 300000;
-        tx.addApprove(this.state.repoInfo.symbol, this.state.repoAmount.toString());
-        this.setState({showRepo: false});
-        iost.signAndSend(tx).on("pending", (trx) => {
-          console.info(trx);
-        })
-          .on("success", async (result) => {
-            // 刷新数据
-            that.props.showSuccessMessage("兑换成功，请等待30s左右查询到账");
-            const storeRepo = await axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`);
-            this.setState({repoInfo: storeRepo.data.data.token})
-          })
-          .on("failed", (failed) => {
-            const msg = chainErrorMessage(failed);
-            if (msg.includes("RepoBalance not enough")) {
-              that.props.showErrorMessage("可兑换的IOST数量不足，请刷新页面重新兑换");
-            } else {
-              that.props.showErrorMessage(msg);
-            }
-          });
+
+    axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`).then((storeRepo) => {
+      this.setState({repoInfo: storeRepo.data.data.token});
+      if (this.state.repoAmount * Number(this.state.repoInfo.repoRate) > this.state.repoInfo.repoBalance) {
+        let repoAmount = this.state.repoInfo.repoBalance / Number(this.state.repoInfo.repoRate);
+        this.setState({repoAmount: repoAmount});
+        alert(`超出可回购余额\r\n本次最多使用 ${repoAmount} ${this.state.repoInfo.symbol} 兑换${(repoAmount * Number(this.state.repoInfo.repoRate)).toFixed(8)} IOST`);
+      } else {
+        this.setState({repoAmount: this.state.repoAmount});
+        if (this.state.repoAmount > 0) {
+          if (confirm(`确认使用 ${this.state.repoAmount} ${this.state.repoInfo.symbol} 兑换${(this.state.repoAmount * Number(this.state.repoInfo.repoRate)).toFixed(8)} IOST`)) {
+            const win = window as any;
+            const iost = win.IWalletJS.newIOST(IOST);
+            // const { wallet, t } = this.props;
+            const that = this;
+            const tx = iost.callABI(
+              CONTRACT_ADDRESS,
+              "exchange",
+              [
+                id,
+                String(this.state.repoAmount),
+              ],
+            );
+            tx.gasLimit = 300000;
+            tx.addApprove(this.state.repoInfo.symbol, this.state.repoAmount.toString());
+            this.setState({showRepo: false});
+            iost.signAndSend(tx).on("pending", (trx) => {
+              console.info(trx);
+            })
+              .on("success", async (result) => {
+                // 刷新数据
+                that.props.showSuccessMessage("兑换成功，请等待30s左右查询到账");
+                const storeRepo = await axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`);
+                this.setState({repoInfo: storeRepo.data.data.token})
+              })
+              .on("failed", (failed) => {
+                const msg = chainErrorMessage(failed);
+                if (msg.includes("RepoBalance not enough")) {
+                  that.props.showErrorMessage("可兑换的IOST数量不足，请刷新页面重新兑换");
+                } else {
+                  that.props.showErrorMessage(msg);
+                }
+              });
+          }
+        }
       }
-    }
+    });
+
   }
 }
 
