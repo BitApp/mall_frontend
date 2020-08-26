@@ -3,5 +3,6 @@
   "day": "天",
   "hour": "时",
   "minute": "分",
-  "second": "秒"
+  "second": "秒",
+  "confirmReceiveSuccess": "确认收货成功，30s后重新刷新页面，请勿重复确认收货"
 }
