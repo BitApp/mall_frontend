@@ -88,7 +88,7 @@ class Wallet extends React.Component<IProps> {
             clearInterval(timeInterval);
             this.props.setWallet(account);
             const iost = win.IWalletJS.newIOST(IOST);
-            iost.rpc.blockchain.getBatchContractStorage = async function (contractID, key, keyFields, pending = true) {
+            iost.rpc.blockchain.getBatchContractStorage = async function(contractID, key, keyFields, pending = true) {
               const query = {
                 id: contractID,
                 key,

@@ -234,43 +234,47 @@ class StoreProduct extends React.Component<IProps, IState> {
 
   public async exchange(prod) {
     const win = window as any;
-    const iost = win.IWalletJS.newIOST(IOST);
-    const {wallet, t, id, router, storeInfo} = this.props;
-    const that = this;
-    if (Number(prod.quantity) <= 0) {
-      alert("物品库存不足，请联系店家增加库存");
-      return;
-    }
-    const res = await axios.get(`${API_URL }/stores/${encodeURIComponent(id)}`);
-    if (res.data.data?.name) {
-      const tx = iost.callABI(
-        CONTRACT_ADDRESS,
-        "buyProduct",
-        [
-          prod.pId,
-        ],
-      );
-      tx.gasLimit = 300000;
-      tx.addApprove(prod.token, prod.price.toString());
-      iost.signAndSend(tx).on("pending", (trx) => {
-        console.info(trx);
-      })
-        .on("success", () => {
-          // 刷新数据
-          alert("兑换" + prod.name + "成功, 恭喜您已获得" + prod.name + ", " + "请主动联系卖家发货 " + storeInfo.sellerWechat);
-          router.push("/exchange/history");
-        })
-        .on("failed", (failed) => {
-          const msg = chainErrorMessage(failed);
-          if (msg.includes("insufficient product inventory")) {
-            that.props.showErrorMessage("物品库存不足，请联系店家增加库存")
-          } else {
-            that.props.showErrorMessage(chainErrorMessage(failed));
-          }
-        });
-    } else {
-      alert(`该店铺已下架`);
-      router.push("/store");
+    if (win.IWalletJS) {
+      win.IWalletJS.enable().then((account) => {
+        const iost = win.IWalletJS.newIOST(IOST);
+        const {wallet, t, id, router, storeInfo} = this.props;
+        const that = this;
+        if (Number(prod.quantity) <= 0) {
+          alert("物品库存不足，请联系店家增加库存");
+          return;
+        }
+        const res = await axios.get(`${API_URL }/stores/${encodeURIComponent(id)}`);
+        if (res.data.data?.name) {
+          const tx = iost.callABI(
+            CONTRACT_ADDRESS,
+            "buyProduct",
+            [
+              prod.pId,
+            ],
+          );
+          tx.gasLimit = 300000;
+          tx.addApprove(prod.token, prod.price.toString());
+          iost.signAndSend(tx).on("pending", (trx) => {
+            console.info(trx);
+          })
+            .on("success", () => {
+              // 刷新数据
+              alert("兑换" + prod.name + "成功, 恭喜您已获得" + prod.name + ", " + "请主动联系卖家发货 " + storeInfo.sellerWechat);
+              router.push("/exchange/history");
+            })
+            .on("failed", (failed) => {
+              const msg = chainErrorMessage(failed);
+              if (msg.includes("insufficient product inventory")) {
+                that.props.showErrorMessage("物品库存不足，请联系店家增加库存")
+              } else {
+                that.props.showErrorMessage(chainErrorMessage(failed));
+              }
+            });
+        } else {
+          alert(`该店铺已下架`);
+          router.push("/store");
+        }
+      });
     }
   }
 
@@ -289,36 +293,40 @@ class StoreProduct extends React.Component<IProps, IState> {
         if (this.state.repoAmount > 0) {
           if (confirm(`确认使用 ${this.state.repoAmount} ${this.state.repoInfo.symbol} 兑换${Number((this.state.repoAmount * Number(this.state.repoInfo.repoRate)).toFixed(8))} IOST`)) {
             const win = window as any;
-            const iost = win.IWalletJS.newIOST(IOST);
-            // const { wallet, t } = this.props;
-            const that = this;
-            const tx = iost.callABI(
-              CONTRACT_ADDRESS,
-              "exchange",
-              [
-                id,
-                String(this.state.repoAmount),
-              ],
-            );
-            tx.gasLimit = 300000;
-            tx.addApprove(this.state.repoInfo.symbol, this.state.repoAmount.toString());
-            this.setState({showRepo: false});
-            iost.signAndSend(tx).on("pending", (trx) => {
-              console.info(trx);
-            }).on("success", async (result) => {
-              // 刷新数据
-              that.props.showSuccessMessage("兑换成功，请等待30s左右查询到账");
-              const storeRepo = await axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`);
-              this.setState({repoInfo: storeRepo.data.data.token});
-            })
-            .on("failed", (failed) => {
-              const msg = chainErrorMessage(failed);
-              if (msg.includes("RepoBalance not enough")) {
-                that.props.showErrorMessage("可兑换的IOST数量不足，请刷新页面重新兑换");
-              } else {
-                that.props.showErrorMessage(msg);
-              }
-            });
+            if (win.IWalletJS) {
+              win.IWalletJS.enable().then((account) => {
+                const iost = win.IWalletJS.newIOST(IOST);
+                // const { wallet, t } = this.props;
+                const that = this;
+                const tx = iost.callABI(
+                  CONTRACT_ADDRESS,
+                  "exchange",
+                  [
+                    id,
+                    String(this.state.repoAmount),
+                  ],
+                );
+                tx.gasLimit = 300000;
+                tx.addApprove(this.state.repoInfo.symbol, this.state.repoAmount.toString());
+                this.setState({showRepo: false});
+                iost.signAndSend(tx).on("pending", (trx) => {
+                  console.info(trx);
+                }).on("success", async (result) => {
+                  // 刷新数据
+                  that.props.showSuccessMessage("兑换成功，请等待30s左右查询到账");
+                  const storeRepo = await axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`);
+                  this.setState({repoInfo: storeRepo.data.data.token});
+                })
+                .on("failed", (failed) => {
+                  const msg = chainErrorMessage(failed);
+                  if (msg.includes("RepoBalance not enough")) {
+                    that.props.showErrorMessage("可兑换的IOST数量不足，请刷新页面重新兑换");
+                  } else {
+                    that.props.showErrorMessage(msg);
+                  }
+                });
+              });
+            }
           }
         }
       }
