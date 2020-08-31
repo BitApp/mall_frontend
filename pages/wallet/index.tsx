@@ -68,7 +68,8 @@ class Wallet extends React.Component<IProps> {
                     <img className="inline align-middle" width="36" src={require("../../imgs/icon_iost.svg")}/>
                     <span className="align-middle ml-2">{item}</span>
                   </span>
-                  { balances[index] && <span>{(balances[index] / Math.pow(10, decimals[index] || 1)).toFixed(2)}</span> }
+                  { balances[index] &&
+                  <span>{(balances[index] / Math.pow(10, decimals[index] || 1)).toFixed(2)}</span> }
                 </div>
               </li>);
             })

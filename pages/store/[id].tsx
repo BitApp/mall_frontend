@@ -20,7 +20,6 @@ import {
 } from "../../store/actions";
 import {ACTIONS, API_URL, CONTRACT_ADDRESS, LANGS, SERVER_API_URL, TABS} from "../../utils/constant";
 import {chainErrorMessage} from "../../utils/helper";
-import store from ".";
 
 interface IProps extends WithTranslation {
   id: string;
@@ -42,7 +41,7 @@ interface IProps extends WithTranslation {
 interface IState {
   showRepo: boolean;
   repoAmount: number;
-  repoInfo: any
+  repoInfo: any;
 }
 
 class StoreProduct extends React.Component<IProps, IState> {
@@ -65,18 +64,20 @@ class StoreProduct extends React.Component<IProps, IState> {
       namespacesRequired: ["common"],
       products,
       storeInfo,
-      repoInfo
+      repoInfo,
     };
   }
 
+  public inputRef: React.RefObject<any>;
 
   constructor(props) {
     super(props);
     this.state = {
       showRepo: false,
       repoAmount: 0,
-      repoInfo: props.repoInfo
-    }
+      repoInfo: props.repoInfo,
+    };
+    this.inputRef = React.createRef();
   }
 
   public render() {
@@ -94,6 +95,7 @@ class StoreProduct extends React.Component<IProps, IState> {
         <Tips/>
         <Modal
           isOpen={this.state.showRepo}
+          ariaHideApp={false}
           // onAfterOpen={afterOpenModal}
           // onRequestClose={closeModal}
           style={{
@@ -118,21 +120,7 @@ class StoreProduct extends React.Component<IProps, IState> {
                 onChange={(evt) => {
                   this.setState({repoAmount: Number(evt.target.value)});
                 }}
-                value={this.state.repoAmount}
-                onBlur={(evt) => {
-                  const tmp = evt.target.value;
-                  const value = tmp.replace(/[^1-9]{0,1}(\d*(?:\.\d{0,2})?).*$/g, "$1");
-                  axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`).then((storeRepo) => {
-                    this.setState({repoInfo: storeRepo.data.data.token});
-                    if (Number(value) * Number(this.state.repoInfo.repoRate) > this.state.repoInfo.repoBalance) {
-                      let repoAmount = this.state.repoInfo.repoBalance / Number(this.state.repoInfo.repoRate);
-                      this.setState({repoAmount: repoAmount});
-                      alert(`超出可回购余额\r\n本次最多使用 ${repoAmount} ${this.state.repoInfo.symbol} 兑换${(repoAmount * Number(this.state.repoInfo.repoRate)).toFixed(8)} IOST`);
-                    } else {
-                      this.setState({repoAmount: Number(value)});
-                    }
-                  });
-                }}
+                ref={this.inputRef}
                 min="0"
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 type="text"
@@ -169,8 +157,7 @@ class StoreProduct extends React.Component<IProps, IState> {
               </span>
                 </div>
                 <div className="leading-8">兑换余额:
-                  <span className="font-semibold ml-1">{this.state.repoInfo.repoBalance}
-                    <small>IOST</small></span></div>
+                <span className="font-semibold ml-1">{this.state.repoInfo.repoBalance} <small>IOST</small></span></div>
               </div>
               <button className="button-bg hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-md"
                       onClick={() => this.setState({showRepo: true})}>
@@ -252,7 +239,7 @@ class StoreProduct extends React.Component<IProps, IState> {
     const that = this;
     if (Number(prod.quantity) <= 0) {
       alert("物品库存不足，请联系店家增加库存");
-      return
+      return;
     }
     const res = await axios.get(`${API_URL }/stores/${encodeURIComponent(id)}`);
     if (res.data.data?.name) {
@@ -293,13 +280,14 @@ class StoreProduct extends React.Component<IProps, IState> {
     axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`).then((storeRepo) => {
       this.setState({repoInfo: storeRepo.data.data.token});
       if (this.state.repoAmount * Number(this.state.repoInfo.repoRate) > this.state.repoInfo.repoBalance) {
-        let repoAmount = this.state.repoInfo.repoBalance / Number(this.state.repoInfo.repoRate);
-        this.setState({repoAmount: repoAmount});
-        alert(`超出可回购余额\r\n本次最多使用 ${repoAmount} ${this.state.repoInfo.symbol} 兑换${(repoAmount * Number(this.state.repoInfo.repoRate)).toFixed(8)} IOST`);
+        const repoAmount = this.state.repoInfo.repoBalance / Number(this.state.repoInfo.repoRate);
+        this.setState({repoAmount});
+        this.inputRef.current.value = repoAmount;
+        alert(`超出可回购余额\r\n本次最多使用 ${repoAmount} ${this.state.repoInfo.symbol} 兑换${Number((repoAmount * Number(this.state.repoInfo.repoRate)).toFixed(8))} IOST`);
       } else {
         this.setState({repoAmount: this.state.repoAmount});
         if (this.state.repoAmount > 0) {
-          if (confirm(`确认使用 ${this.state.repoAmount} ${this.state.repoInfo.symbol} 兑换${(this.state.repoAmount * Number(this.state.repoInfo.repoRate)).toFixed(8)} IOST`)) {
+          if (confirm(`确认使用 ${this.state.repoAmount} ${this.state.repoInfo.symbol} 兑换${Number((this.state.repoAmount * Number(this.state.repoInfo.repoRate)).toFixed(8))} IOST`)) {
             const win = window as any;
             const iost = win.IWalletJS.newIOST(IOST);
             // const { wallet, t } = this.props;
@@ -317,21 +305,20 @@ class StoreProduct extends React.Component<IProps, IState> {
             this.setState({showRepo: false});
             iost.signAndSend(tx).on("pending", (trx) => {
               console.info(trx);
+            }).on("success", async (result) => {
+              // 刷新数据
+              that.props.showSuccessMessage("兑换成功，请等待30s左右查询到账");
+              const storeRepo = await axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`);
+              this.setState({repoInfo: storeRepo.data.data.token});
             })
-              .on("success", async (result) => {
-                // 刷新数据
-                that.props.showSuccessMessage("兑换成功，请等待30s左右查询到账");
-                const storeRepo = await axios.get(`${ API_URL}/stores/${encodeURIComponent(id)}`);
-                this.setState({repoInfo: storeRepo.data.data.token})
-              })
-              .on("failed", (failed) => {
-                const msg = chainErrorMessage(failed);
-                if (msg.includes("RepoBalance not enough")) {
-                  that.props.showErrorMessage("可兑换的IOST数量不足，请刷新页面重新兑换");
-                } else {
-                  that.props.showErrorMessage(msg);
-                }
-              });
+            .on("failed", (failed) => {
+              const msg = chainErrorMessage(failed);
+              if (msg.includes("RepoBalance not enough")) {
+                that.props.showErrorMessage("可兑换的IOST数量不足，请刷新页面重新兑换");
+              } else {
+                that.props.showErrorMessage(msg);
+              }
+            });
           }
         }
       }
