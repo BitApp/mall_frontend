@@ -235,7 +235,7 @@ class StoreProduct extends React.Component<IProps, IState> {
   public async exchange(prod) {
     const win = window as any;
     if (win.IWalletJS) {
-      win.IWalletJS.enable().then((account) => {
+      win.IWalletJS.enable().then(async (account) => {
         const iost = win.IWalletJS.newIOST(IOST);
         const {wallet, t, id, router, storeInfo} = this.props;
         const that = this;
