@@ -259,7 +259,7 @@ class StoreProduct extends React.Component<IProps, IState> {
           })
             .on("success", () => {
               // 刷新数据
-              alert("兑换" + prod.name + "成功, 恭喜您已获得" + prod.name + ", " + "请主动联系卖家发货 " + storeInfo.sellerWechat);
+              alert(`兑换${prod.name}成功，恭喜您已获得${prod.name},请主动联系卖家发货\r\n即将跳转"我的兑换"页面，兑换完成后30s记录便会展示，跳转后请等待30s后刷新页面`);
               router.push("/exchange/history");
             })
             .on("failed", (failed) => {
