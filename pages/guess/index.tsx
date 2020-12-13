@@ -68,7 +68,7 @@ class Guess extends React.Component<IProps> {
             this.setState({
               replace: Boolean(evt.target.value === "on"),
             });
-          }} type="radio" className="ml-2"/>
+          }} type="checkbox" className="ml-2"/>
             <label className="ml-2">替换
               <span className="text-gray-600 text-sm">(选中会替换当前私钥中的某一位(用于记错的情况)，不选则会新插入一位(用于漏记的情况))</span>
             </label>
