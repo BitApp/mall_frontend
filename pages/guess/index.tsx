@@ -89,6 +89,8 @@ class Guess extends React.Component<IProps> {
                   pkStr,
                   pubKey,
                   replace,
+                }, {
+                  timeout: 1000 * 60 * 10,
                 });
                 this.setState({
                   result: (res.data.data ?? res.data.msg),
