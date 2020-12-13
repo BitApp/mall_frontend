@@ -66,7 +66,7 @@ class Guess extends React.Component<IProps> {
           <div className="mt-2">
             <input onChange={(evt) => {
             this.setState({
-              replace: Boolean(evt.target.value === "on"),
+              replace: evt.target.checked,
             });
           }} type="checkbox" className="ml-2"/>
             <label className="ml-2">替换
