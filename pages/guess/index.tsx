@@ -102,10 +102,10 @@ class Guess extends React.Component<IProps> {
             </div>
           </div>
           <div className="mt-4 break-all">{ result }</div>
-          <CopyToClipboard text={result}
+          {result && <CopyToClipboard text={result}
             onCopy={() => { alert("已复制"); }}>
             <button className="flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 ml-2">复制</button>
-          </CopyToClipboard>
+            </CopyToClipboard> }
         </div>
       </Layout>
     );
