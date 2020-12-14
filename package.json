@@ -38,6 +38,7 @@
     "patch-package": "^6.2.2",
     "postcss-import": "^12.0.1",
     "react": "^16.13.0",
+    "react-copy-to-clipboard": "^5.0.2",
     "react-countdown": "^2.2.1",
     "react-dom": "^16.13.0",
     "react-loading-skeleton": "^2.0.1",

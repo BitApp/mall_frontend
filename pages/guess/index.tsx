@@ -7,6 +7,7 @@ import { bindActionCreators, Dispatch } from "redux";
 import Layout from "../../components/Layout";
 import { withTranslation } from "../../i18n";
 import { API_URL, LANGS, TABS } from "../../utils/constant";
+import {CopyToClipboard} from "react-copy-to-clipboard";
 
 interface IProps extends WithTranslation {
   router: SingletonRouter;
@@ -100,7 +101,11 @@ class Guess extends React.Component<IProps> {
               </button>
             </div>
           </div>
-            <div className="mt-4 break-all">{ result }</div>
+          <div className="mt-4 break-all">{ result }</div>
+          <CopyToClipboard text={result}
+            onCopy={() => { alert("已复制"); }}>
+            <button>复制</button>
+          </CopyToClipboard>
         </div>
       </Layout>
     );
