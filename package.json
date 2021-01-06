@@ -21,7 +21,7 @@
     "@winstrike/next-i18next-koa": "^0.1.14",
     "@zeit/next-sass": "^1.0.1",
     "autoprefixer": "^9.7.4",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "classnames": "^2.2.6",
     "iost": "^0.1.22",
     "koa": "^2.11.0",
